@@ -196,7 +196,13 @@ public class ResultTab extends Tab {
 			rootField.getChildren().add(check);
 		}
 		
+		AnchorPane columnAncWrapPane = new AnchorPane();
 		AnchorPane columnAncPane = new AnchorPane();
+		columnAncPane.setMinSize(0, 0);
+		columnAncPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+		columnAncPane.prefHeightProperty().bind(columnAncWrapPane.heightProperty());
+		columnAncPane.prefWidthProperty().bind(columnAncWrapPane.widthProperty());
+		columnAncWrapPane.getChildren().add(columnAncPane);
 		
 		TreeView<CheckBox> columnTreePane = new TreeView<CheckBox>(rootField);
 		AnchorPane columnTreeWrapPane = new AnchorPane();
@@ -213,7 +219,7 @@ public class ResultTab extends Tab {
 		columnTitledPane.prefWidthProperty().bind(columnAncPane.widthProperty());
 		columnTitledPane.setCollapsible(false);
 		columnAncPane.getChildren().add(columnTitledPane);
-		horizontalPane.getItems().add(columnAncPane);
+		horizontalPane.getItems().add(columnAncWrapPane);
 	}
 	
 	private void initFooterPane() {

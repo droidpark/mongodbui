@@ -3,6 +3,9 @@ package com.droidpark.mongoui.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 
 public class ConsoleUtil {
@@ -19,6 +22,8 @@ public class ConsoleUtil {
 	}
 	
 	public static void echo(String text) {
-		textArea.setText("[" + formatter.format(new Date())+ "] " + text + "\n\r" + textArea.getText());
+		String write = "[" + formatter.format(new Date())+ "] " + text + "\n\r";
+		textArea.appendText(write);
 	}
+	
 }
