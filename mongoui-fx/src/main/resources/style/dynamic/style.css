@@ -1,0 +1,200 @@
+.root {
+	-fx-font-size: 12px;
+}
+
+/*
+ * Titled Pane
+ **/
+.titled-pane .title {
+	-fx-background-radius: 0px;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #f2f2f2 0%, #ececec 100%);
+	-fx-border-style: none;
+	-fx-padding: 8px;
+	-fx-border-style: solid;
+	-fx-border-color: #e1e1e1;
+	-fx-border-width: 0px 0px 1px 0px;
+}
+
+.titled-pane .title:focused {
+	-fx-font-color: #333;
+}
+
+.titled-pane .content {
+	-fx-background-color: #FFF;
+	-fx-border-style: none;
+}
+
+/**
+ * Split Pane - no border
+ ***/
+.split-pane {
+	-fx-background-color: #FFF;
+	-fx-padding: 0px;
+}
+
+.split-pane *.split-pane-divider,.split-pane *.vertical-grabber,.split-pane *.horizontal-grabber
+	{
+	-fx-background-color: #a7a7a7;
+	-fx-border-color: null;
+}
+
+.split-pane *.split-pane-divider:hover,.split-pane *.vertical-grabber:hover,.split-pane *.horizontal-grabber :hover
+	{
+	-fx-background-color: #333;
+}
+
+/**
+ * Scroll Panel
+ ****/
+.scroll-pane {
+	-fx-background-color: #FFF;
+}
+
+.scroll-pane  .corner {
+	-fx-background-color: #FFF;
+}
+
+/**
+  * ScrollBar
+  ***/
+.scroll-bar {
+	-fx-background-color: #FFF;
+	-fx-background-radius: 3px;
+}
+
+.scroll-bar .track {
+	-fx-background-radius: 3px;
+	-fx-border-style: none;
+	-fx-width: 100px;
+}
+
+.scroll-bar .thumb {
+	-fx-background-color: #b2b2b2;
+	-fx-background-radius: 3px;
+	-fx-border-style: solid;
+	-fx-border-color: #979797;
+	-fx-border-radius: 3px;
+}
+
+.scroll-bar .thumb:hover {
+	-fx-background-color: #979797;
+}
+
+
+.main-toolbar {
+	-fx-border-style: solid;
+	-fx-border-width: 0px 0px 3px 0px;
+	-fx-border-color: #a7a7a7;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #ebeaea 0%, #cbcacb 100%);
+}
+
+.main-toolbar *.button,.main-toolbar *.toggle-button {
+	-fx-background-color: null;
+	-fx-border-style: none;
+	-fx-text-origin: bottom;
+}
+
+.main-toolbar *.button:hover,.main-toolbar *.toggle-button:hover {
+	-fx-background-color: #f1f1f1;
+	-fx-cursor: hand;
+}
+
+.status-bar {
+	-fx-border-style: solid;
+	-fx-border-width: 1px 0px 0px 0px;
+	-fx-border-color: #a7a7a7;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #fcfcfc 0%, #e1e1e1 100%);
+	-fx-padding: 5px;
+}
+
+.tree-view  {
+	-fx-border-style: none;
+	-fx-border-color: #FFF;
+	
+}
+
+.tree-view:focused {
+	-fx-focus-color: #FFF;
+}
+
+.tab-header-background {
+	-fx-effect: null;
+	-fx-background-color: null;
+	-fx-background-radius: 0px;
+	-fx-border-style: solid;
+	-fx-border-color: #e1e1e1;
+	-fx-border-width: 0px 0px 1px 0px;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #f2f2f2 0%, #ececec 100%);
+}
+
+.tab-header-area .headers-region {
+	-fx-effect: null;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #f2f2f2 0%, #ececec 100%);
+}
+
+
+.tab {
+	-fx-effect: null;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #fff 0%, #f1f1f1 80%);
+	-fx-background-insets: 0;
+	-fx-background-radius: 2px 2px 0px 2px;
+	-fx-background-images: null;
+	
+	-fx-border-insets: 0;
+	-fx-border-radius: 2px 2px 0px 2px;
+	-fx-border-width: 1px 1px 1px 1px;
+	-fx-border-color: e1e1e1;
+}
+
+.tab:selected {
+	-fx-border-width: 1px 1px 0px 1px;
+}
+
+.tab .tab-label  {
+}
+
+.tab .tab-close-button {
+	-fx-cursor: hand;
+}
+
+.tab-content-area {
+	-fx-background-color: #f1f1f1;
+}
+
+
+.table-view {
+	-fx-background-color: null;
+	-fx-padding: 0px;
+	-fx-font-size: 11px;
+	-fx-border-style: none;
+	/*-fx-border-color: #a7a7a7;
+	-fx-border-width: 1px 0px 1px 0px; */
+}
+
+.table-view .column-header-background {
+	-fx-background-radius: 0px;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #f2f2f2 0%, #ececec 100%);
+	-fx-border-style: none;
+	-fx-padding: 3.5px;
+	-fx-border-style: solid;
+	-fx-border-color: #e1e1e1;
+	-fx-border-width: 0px 0px 1px 0px;
+}
+
+
+.table-view .column-header, .table-view .nested-column-header, .table-view .placeholder, .table-view .filler  {
+	-fx-border-style: none;
+	-fx-alignment: center-left;
+}
+
+.-mongoui-tab-toolpane {
+	-fx-border-style: solid;
+	-fx-border-color: #FFF;
+	-fx-border-width: 0px 0px 1px 0px;
+}
+
+.-mongoui-tab-footerpane {
+	-fx-border-style: solid;
+	-fx-border-color: #FFF;
+	-fx-border-width: 1px 0px 0px 0px;
+}
