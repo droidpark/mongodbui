@@ -72,7 +72,7 @@ public class ModalDialog {
 		main.getStyleClass().add("-mongoui-modal");
 		main.setPrefSize(width, height);
 		main.setLayoutX((pane.getPrefWidth() / 2) - (width / 2));
-		main.setLayoutY(100);
+		main.setLayoutY((pane.getPrefHeight() / 2) - (height / 2));
 		main.setStyle("-fx-background-color: #f1f1f1");
 		pane.getChildren().add(main);
 	}
@@ -106,6 +106,7 @@ public class ModalDialog {
 		footer.setPrefHeight(30);
 		footer.getStyleClass().add("-mongoui-modal-footer");
 		footer.setAlignment(Pos.CENTER_RIGHT);
+		footer.setSpacing(5);
 		borderPane.setBottom(footer);
 	}
 	

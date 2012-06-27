@@ -86,7 +86,7 @@ public class MainForm extends Application {
 		initCenterPane();
 		initTabPane();
 		initConsole();
-		connectToDatabase();
+		connectToDatabaseModalDialog();
 	}
 	
 	
@@ -223,7 +223,7 @@ public class MainForm extends Application {
 		createConnectionButton.setContentDisplay(ContentDisplay.TOP);
 		createConnectionButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				connectToDatabase();
+				connectToDatabaseModalDialog();
 			}
 		});
 		toolBar.getItems().add(createConnectionButton);
@@ -331,6 +331,7 @@ public class MainForm extends Application {
 			treeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent event) {
 					TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+					if(item == null) {return;}
 					if(item.getParent() != null) {
 						DBTreeEnum treeEnum = DBTreeEnum.find(item.getParent().getValue());
 						switch (treeEnum) {
@@ -391,7 +392,7 @@ public class MainForm extends Application {
 		ConsoleUtil.echo("Welcome to MongoUI 1.0 Beta.", ConsoleLabelEnum.MONGO_UI);
 	}
 	
-	private void connectToDatabase() {
+	private void connectToDatabaseModalDialog() {
 		final ModalDialog dialog = new ModalDialog("Connect to Database", 250, 150, ImageUtil.DATABASE_24_24);
 		GridPane grid = new GridPane();
 		
@@ -406,6 +407,14 @@ public class MainForm extends Application {
 		final TextField portField = new TextField("27017");
 		grid.addRow(1, portLabel, portField);
 		dialog.setContent(grid);
+		
+		Button cancelButton = new Button("Cancel");
+		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				dialog.hideModalDialog();
+			}
+		});
+		dialog.addNodeToFooter(cancelButton);
 		
 		Button connectButton = new Button("Connect");
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
