@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 
+import com.droidpark.mongoui.util.ConsoleLabelEnum;
 import com.droidpark.mongoui.util.ConsoleUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -43,11 +45,13 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 public class ResultTab extends Tab {
 
+	private Mongo mongo;
 	private String collectionName;
 	private String databaseName;
 	
@@ -62,10 +66,11 @@ public class ResultTab extends Tab {
 	int resultSize = 0;
 	private Gson gson = null;
 	
-	public ResultTab(String collection, String database) {
+	public ResultTab(String collection, String database, Mongo mongo) {
 		super(database + "." + collection);
 		this.collectionName = collection;
 		this.databaseName = database;
+		this.mongo = mongo;
 		initComponent();
 	}
 	
@@ -75,6 +80,7 @@ public class ResultTab extends Tab {
 		initResultTable();
 		initColumnViewPane();
 		initFooterPane();
+		initToolPane();
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setTop(tabToolPane);
@@ -90,13 +96,12 @@ public class ResultTab extends Tab {
 			
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gson = gsonBuilder.serializeNulls().create();
-			Mongo mongo = new Mongo("192.168.56.101", 27017);
 			DB database = mongo.getDB(databaseName);
 			DBCollection collection = database.getCollection(collectionName);
 			resultSize = collection.find(new BasicDBObject()).size();
-			ConsoleUtil.echo("Query: db." + collectionName + ".find().size()");
+			ConsoleUtil.echo("db." + collectionName + ".find().size()", ConsoleLabelEnum.QUERY);
 			DBCursor cursor = collection.find(new BasicDBObject()).limit(20);
-			ConsoleUtil.echo("Query: db." + collectionName + ".find().limit(20)");
+			ConsoleUtil.echo("db." + collectionName + ".find().limit(20)", ConsoleLabelEnum.QUERY);
 			Set<String> columnsSet = new HashSet<String>();
 			while(cursor.hasNext()) {
 				DBObject object = cursor.next();
@@ -228,6 +233,11 @@ public class ResultTab extends Tab {
 		footerBox.getChildren().add(new Label(resultSize + " items."));
 		footerBox.setStyle("-fx-padding: 4px;");
 		tabFooterPane.getChildren().add(footerBox);
+	}
+	
+	private void initToolPane() {
+		HBox toolBox = new HBox();
+		tabToolPane.getChildren().add(toolBox);
 	}
 	
 }

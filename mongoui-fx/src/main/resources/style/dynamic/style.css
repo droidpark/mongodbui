@@ -15,9 +15,9 @@
 	-fx-border-width: 0px 0px 1px 0px;
 }
 
-.titled-pane .title:focused {
-	-fx-font-color: #333;
-}
+.titled-pane .title:focused {  
+	-fx-font-color: #333; 
+} 
 
 .titled-pane .content {
 	-fx-background-color: #FFF;
@@ -197,4 +197,39 @@
 	-fx-border-style: solid;
 	-fx-border-color: #FFF;
 	-fx-border-width: 1px 0px 0px 0px;
+}
+
+
+.-mongoui-modal {
+	-fx-background-radius: 3px;
+	-fx-border-radius: 3px;
+}
+
+.-mongoui-modal-header {
+	-fx-border-style: solid;
+	-fx-border-width: 0px 0px 3px 0px;
+	-fx-border-color: #a7a7a7;
+	-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #ebeaea 0%, #cbcacb 100%);
+	-fx-padding: 10px;
+	-fx-background-radius: 3px 3px 0px 0px;
+	-fx-border-radius: 3px 3px 0px 0px;
+	-fx-cursor: move;
+}
+
+.-mongoui-modal-header-label {
+	-fx-font-size: 14px;
+	-fx-padding: 3px;
+}
+
+.-mongoui-modal-content {
+}
+
+.-mongoui-modal-footer {
+	-fx-background-radius: 0px 0px 3px 3px;
+	-fx-border-radius: 0px 0px 3px 3px;
+	-fx-border-style: solid;
+	-fx-border-width: 3px 0px 0px 0px;
+	-fx-border-color: #a7a7a7;
+	-fx-background-color: #e0e0e0;
+	-fx-padding: 10px;
 }

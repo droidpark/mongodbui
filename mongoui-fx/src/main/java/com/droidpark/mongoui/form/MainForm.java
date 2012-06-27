@@ -1,20 +1,27 @@
 package com.droidpark.mongoui.form;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.droidpark.mongoui.component.ModalDialog;
 import com.droidpark.mongoui.task.AddResultTabTask;
 import com.droidpark.mongoui.task.CreateResultTabTask;
+import com.droidpark.mongoui.util.DBTreeEnum;
+import com.droidpark.mongoui.util.ConsoleLabelEnum;
 import com.droidpark.mongoui.util.ConsoleUtil;
 import com.droidpark.mongoui.util.ImageUtil;
+import com.droidpark.mongoui.util.Util;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -22,10 +29,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
@@ -34,8 +42,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class MainForm extends Application {
@@ -48,14 +58,13 @@ public class MainForm extends Application {
 	private HBox statusBar;
 	private Accordion leftAccordionPane;
 	private AnchorPane databasePane;
-	private AnchorPane consolePane;
+	private BorderPane consolePane;
 	private AnchorPane centerPane;
 	private TabPane tabPane;
-	private TextArea console;
+	private WebView webView;
+	private final ProgressBar progressBar = new ProgressBar();
 	
-	private final ProgressBar progressBar = new ProgressBar();;
-	
-	private static String DEFAULT_STYLE = "/style/dynamic/";
+	private Mongo mongo;
 	
 	@Override
 	public void start(Stage primary) throws Exception {
@@ -75,9 +84,9 @@ public class MainForm extends Application {
 		initToolBarButtons();
 		initStatusBar();
 		initCenterPane();
-		initDatabaseTree();
 		initTabPane();
 		initConsole();
+		connectToDatabase();
 	}
 	
 	
@@ -88,12 +97,13 @@ public class MainForm extends Application {
 		stage.setTitle("MongoUI FX");
 		pane = new AnchorPane();
 		scene = new Scene(pane, 850, 500);
-		scene.getStylesheets().addAll(getClass().getResource(DEFAULT_STYLE + "style.css").toExternalForm());
+		scene.getStylesheets().addAll(getClass().getResource(Util.DEFAULT_STYLE + "style.css").toExternalForm());
 		pane.prefWidthProperty().bind(scene.widthProperty());
 		pane.prefHeightProperty().bind(scene.heightProperty());
 		stage.setScene(scene);
 		stage.centerOnScreen();
 		progressBar.setProgress(0);
+		ModalDialog.MAIN_FRAME = pane;
 	}
 	
 	/**
@@ -181,7 +191,7 @@ public class MainForm extends Application {
 		verticalSplitPane.getItems().add(centerPane);
 		
 		//Bottom Pane
-		consolePane = new AnchorPane();
+		consolePane = new BorderPane();
 		consolePane.setMinSize(0, 0);
 		consolePane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 		consolePane.prefHeight(150);
@@ -211,6 +221,11 @@ public class MainForm extends Application {
 		//Connection Database
 		Button createConnectionButton = new Button("Database", new ImageView(ImageUtil.DATABASE_24_24));
 		createConnectionButton.setContentDisplay(ContentDisplay.TOP);
+		createConnectionButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				connectToDatabase();
+			}
+		});
 		toolBar.getItems().add(createConnectionButton);
 		
 		//Add Collection
@@ -249,16 +264,17 @@ public class MainForm extends Application {
 	/**
 	 * Database Connection after Database Tree Init.
 	 */
-	private void initDatabaseTree() {
+	private void initDatabaseTree(String host, int port) {
 		try {
-			Mongo mongo = new Mongo("192.168.56.101", 27017);
+			mongo = new Mongo(host, port);
 			List<String> databaseList = new ArrayList<String>(mongo.getDatabaseNames());
 			//Root Node
-			TreeItem<String> root = new TreeItem<String>("192.168.56.101", new ImageView(ImageUtil.NEXT_NODE_16_16));
+			TreeItem<String> root = new TreeItem<String>(host, new ImageView(ImageUtil.NEXT_NODE_16_16));
 			root.setExpanded(true);
 			//Database Nodes
 			for(String dbname : databaseList) {
-				TreeItem<String> main = new TreeItem<String>(dbname, new ImageView(ImageUtil.DATABASE_16_16));
+				TreeItem<String> main = new TreeItem<String>(dbname, new ImageView(ImageUtil.DATABASE2_16_16));
+				
 				//Collection Nodes
 				TreeItem<String> collectionItem = new TreeItem<String>("Collections", new ImageView(ImageUtil.COLLECTION_16_16));
 				main.getChildren().add(collectionItem);
@@ -267,6 +283,9 @@ public class MainForm extends Application {
 				DB database = mongo.getDB(dbname);
 				Set<String> collectionList = new HashSet<String>(database.getCollectionNames());
 				for(String collectionName: collectionList) {
+					
+					if(collectionName.contains("system.")) { continue;}
+					
 					TreeItem<String> item = new TreeItem<String>(collectionName, new ImageView(ImageUtil.COLLECTION3_16_16));
 					collectionItem.getChildren().add(item);
 					
@@ -283,9 +302,25 @@ public class MainForm extends Application {
 					}
 				}
 				root.getChildren().add(main);
+				
+				//JavaScripts
+				TreeItem<String> javascriptItem = new TreeItem<String>("Stored JScripts", new ImageView(ImageUtil.JAVASCRIPT_16_16));
+				main.getChildren().add(javascriptItem);
+				
+				if(database.collectionExists("system.js")) {
+					DBCollection javascripts = database.getCollection("system.js");
+					DBCursor cursor =  javascripts.find();
+					
+					while(cursor.hasNext()) {
+						DBObject obj = cursor.next();
+						TreeItem<String> item = new TreeItem<String>(obj.get("_id").toString(),  new ImageView(ImageUtil.JAVASCRIPT2_16_16));
+						javascriptItem.getChildren().add(item);
+					}
+				}
 			}
 			
 			//Database TreeView
+			databasePane.getChildren().clear();
 			final TreeView<String> treeView = new TreeView<String>(root);
 			treeView.prefHeightProperty().bind(databasePane.heightProperty());
 			treeView.prefWidthProperty().bind(databasePane.widthProperty());
@@ -295,30 +330,48 @@ public class MainForm extends Application {
 			// Add New Result Tab For onClick Collection Item
 			treeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				public void handle(MouseEvent event) {
-					final TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
-					if(item.getParent().getValue().equalsIgnoreCase("Collections")) {
-						
-						//Create new result Tab task
-						CreateResultTabTask task = new CreateResultTabTask(item.getValue(), item.getParent().getParent().getValue());
-						progressBar.progressProperty().bind(task.progressProperty());
-						Thread taskThread = new Thread(task);
-						taskThread.start();
-						
-						//Add Result tab to TabPane Task
-						AddResultTabTask addTabTask = new AddResultTabTask(task, tabPane);
-						Thread tabThread = new Thread(addTabTask);
-						tabThread.start();
+					TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+					if(item.getParent() != null) {
+						DBTreeEnum treeEnum = DBTreeEnum.find(item.getParent().getValue());
+						switch (treeEnum) {
+							case COLLECTION: onClickCollectionItem(item); break;
+							case JAVASCRIPT: break;
+						}
 					}
 				}
 			});
 			
+			ConsoleUtil.echo("Successfully connected to " + host + ".", ConsoleLabelEnum.MONGO_UI);
+		}
+		catch (UnknownHostException e) {
+			databasePane.getChildren().clear();
+			ConsoleUtil.echo("Unknown Host: " + e.getMessage(), ConsoleLabelEnum.ERROR);
 		}
 		catch (Exception e) {
+			databasePane.getChildren().clear();
+			ConsoleUtil.echo(e.getMessage(), ConsoleLabelEnum.ERROR);
 			e.printStackTrace();
 		}
 	}
 	
+	// Database Tree onClick Collection Items
+	private void onClickCollectionItem(TreeItem<String> item) {
+		String database = item.getParent().getParent().getValue();
+		String collection = item.getValue();
+		//Create new result Tab task
+		CreateResultTabTask task = new CreateResultTabTask(collection, database, mongo);
+		progressBar.progressProperty().bind(task.progressProperty());
+		Thread taskThread = new Thread(task);
+		taskThread.start();
+		
+		//Add Result tab to TabPane Task
+		AddResultTabTask addTabTask = new AddResultTabTask(task, tabPane);
+		Thread tabThread = new Thread(addTabTask);
+		tabThread.start();
+	}
 	
+	
+	//Init Console
 	private void initConsole() {
 		AnchorPane consoleTextWrap = new AnchorPane();
 		consoleTextWrap.setMinSize(0, 0);
@@ -326,14 +379,44 @@ public class MainForm extends Application {
 		consoleTextWrap.prefHeightProperty().bind(consolePane.heightProperty());
 		consoleTextWrap.prefWidthProperty().bind(consolePane.widthProperty());
 		
-		console = new TextArea();
-		console.setEditable(false);
-		console.prefWidthProperty().bind(consoleTextWrap.prefWidthProperty());
-		console.prefHeightProperty().bind(consoleTextWrap.prefHeightProperty());
-		consoleTextWrap.getChildren().add(console);
+		
+		webView = new WebView();
+		webView.prefWidthProperty().bind(consoleTextWrap.prefWidthProperty());
+		webView.prefHeightProperty().bind(consoleTextWrap.prefHeightProperty());
+		webView.autosize();
+		consoleTextWrap.getChildren().add(webView);
+		
 		consolePane.getChildren().add(consoleTextWrap);
-		ConsoleUtil.init(console);
-		ConsoleUtil.echo("Welcome to MongoUI 1.0 Beta.");
+		ConsoleUtil.init(webView);
+		ConsoleUtil.echo("Welcome to MongoUI 1.0 Beta.", ConsoleLabelEnum.MONGO_UI);
+	}
+	
+	private void connectToDatabase() {
+		final ModalDialog dialog = new ModalDialog("Connect to Database", 250, 150, ImageUtil.DATABASE_24_24);
+		GridPane grid = new GridPane();
+		
+		Label hostLabel = new Label("Host: ");
+		hostLabel.setStyle("-fx-padding: 0px 50px 0px 0px;");
+		final TextField hostField = new TextField("localhost");
+		grid.addRow(0, hostLabel, hostField);
+		grid.setStyle("-fx-padding: 10px;");
+		
+		Label portLabel = new Label("Port: ");
+		portLabel.setStyle("-fx-padding: 0px 50px 0px 0px;");
+		final TextField portField = new TextField("27017");
+		grid.addRow(1, portLabel, portField);
+		dialog.setContent(grid);
+		
+		Button connectButton = new Button("Connect");
+		connectButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				dialog.hideModalDialog();
+				tabPane.getTabs().clear();
+				initDatabaseTree(hostField.getText(), Integer.valueOf(portField.getText()));
+			}
+		});
+		dialog.addNodeToFooter(connectButton);
+		dialog.showModalDialog();
 	}
 	
 	public static void main(String[] args) {

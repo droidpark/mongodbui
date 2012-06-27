@@ -8,6 +8,7 @@ public class ImageUtil {
 	
 	public static Image DATABASE_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database_24_24.png"));
 	public static Image DATABASE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database_16_16.png"));
+	public static Image DATABASE2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database2_16_16.png"));
 	
 	public static Image COLLECTION_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "collection_24_24.png"));
 	public static Image COLLECTION_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "collection_16_16.png"));
@@ -15,6 +16,8 @@ public class ImageUtil {
 	public static Image COLLECTION3_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "collection_item3_16_16.png"));
 	
 	public static Image JAVASCRIPT_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "javascript_24_24.png"));
+	public static Image JAVASCRIPT_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "javascript_16_16.png"));
+	public static Image JAVASCRIPT2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "javascript2_16_16.png"));
 	
 	public static Image SYSTEM_MONITOR_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "system_monitor_24_24.png"));
 	
