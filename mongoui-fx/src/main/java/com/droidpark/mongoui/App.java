@@ -1,15 +1,17 @@
 package com.droidpark.mongoui;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.droidpark.mongoui.form.MainForm;
+
+import javafx.application.Application;
 
 /**
- * Hello world!
+ * MongoUI Launcher
+ * @author Kamil Ors
  *
  */
+
 public class App {
     public static void main( String[] args ) {
-    	SimpleDateFormat format = new SimpleDateFormat("d:M:yyyy H:s:m:S");
-        System.out.println(format.format(new Date()));
+    	Application.launch(MainForm.class, args);
     }
 }

@@ -13,7 +13,78 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<javafx.rt.jar>C:\Program Files (x86)\Oracle\JavaFX 2.1 SDK\rt\lib\jfxrt.jar</javafx.rt.jar>
+		<javafx.ant.jar>C:\Program Files (x86)\Oracle\JavaFX 2.1 SDK\tools\ant-javafx.jar</javafx.ant.jar>
 	</properties>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		
+		<plugins>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <version>2.3</version>
+			    <executions>
+			        <execution>
+			            <id>copy-dependencies</id>
+			            <phase>package</phase>
+			            <configuration>
+			            	<outputDirectory>${project.build.directory}/lib</outputDirectory>
+			                <overwritereleases>false</overwritereleases>
+			                <overwritesnapshots>false</overwritesnapshots>
+			                <overwriteifnewer>true</overwriteifnewer>
+			            </configuration>
+			            <goals>
+			                <goal>copy-dependencies</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-antrun-plugin</artifactId>
+			    <version>1.6</version>
+			    <executions>
+			        <execution>
+			            <id>JavaFX Package</id>
+			            <phase>package</phase>
+			            <configuration>
+		                     <target>
+							    <taskdef name="jfxjar" classname="com.sun.javafx.tools.ant.FXJar" />
+							    <jfxjar destfile="${project.build.directory}/${project.build.finalName}">
+							        <fileset dir="${project.build.directory}/classes"/>
+							        <application name="${project.name}" mainClass="com.droidpark.mongoui.App"/>
+							        <resources>
+							            <fileset dir="${project.build.directory}" includes="*.jar"/>
+							            <fileset dir="${project.build.directory}" includes="lib/junit*.jar"/>
+							            <fileset dir="${project.build.directory}" includes="lib/mongo*.jar"/>
+							            <fileset dir="${project.build.directory}" includes="lib/gson*.jar"/>
+							        </resources>
+							    </jfxjar>
+							</target>
+			            </configuration>
+			            <goals>
+			                <goal>run</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			    <dependencies>
+			        <dependency>
+			            <groupId>com.sun.javafx</groupId>
+			            <artifactId>javafx-ant</artifactId>
+			            <version>2.1</version>
+			            <scope>system</scope>
+			            <systemPath>${javafx.ant.jar}</systemPath>
+			        </dependency>
+			    </dependencies>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<dependency>
@@ -24,24 +95,25 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>javafx</artifactId>
-			<version>2.0</version>
-			<systemPath>${javafx.rt.jar}</systemPath>
-			<scope>system</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>2.7.3</version>
 		</dependency>
-		
-        <dependency>
+
+		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.1</version>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>javafx</artifactId>
+			<version>2.1</version>
+			<systemPath>${javafx.rt.jar}</systemPath>
+			<scope>system</scope>
+		</dependency>
 	</dependencies>
+
+
 </project>

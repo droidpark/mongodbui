@@ -427,8 +427,4 @@ public class MainForm extends Application {
 		dialog.addNodeToFooter(connectButton);
 		dialog.showModalDialog();
 	}
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
 }

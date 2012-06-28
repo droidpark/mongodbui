@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 
 import com.droidpark.mongoui.util.ConsoleLabelEnum;
 import com.droidpark.mongoui.util.ConsoleUtil;
+import com.droidpark.mongoui.util.ImageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -31,17 +32,20 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -228,16 +232,38 @@ public class ResultTab extends Tab {
 	}
 	
 	private void initFooterPane() {
-		HBox footerBox = new HBox();
-		footerBox.getChildren().add(new Label("Result: "));
-		footerBox.getChildren().add(new Label(resultSize + " items."));
-		footerBox.setStyle("-fx-padding: 4px;");
-		tabFooterPane.getChildren().add(footerBox);
+		BorderPane border = new BorderPane();
+		border.prefWidthProperty().bind(tabFooterPane.widthProperty());
+		border.prefHeightProperty().bind(tabFooterPane.heightProperty());
+		tabFooterPane.getChildren().add(border);
+		
+		HBox resultInfoBox = new HBox();
+		border.setLeft(resultInfoBox);
+		resultInfoBox.getChildren().add(new Label("Result: "));
+		resultInfoBox.getChildren().add(new Label(resultSize + " items."));
+		resultInfoBox.setStyle("-fx-padding: 4px;");
+		
+		HBox resultNavBox = new HBox();
+		border.setRight(resultNavBox);
+		Button prev = new Button("", new ImageView(ImageUtil.PREV_16_16));
+		prev.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		resultNavBox.getChildren().add(prev);
+		
+		Label limit = new Label("20 of " + resultSize);
+		resultNavBox.getChildren().add(limit);
+		
+		Button next = new Button("", new ImageView(ImageUtil.NEXT_16_16));
+		next.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		resultNavBox.getChildren().add(next);
 	}
 	
 	private void initToolPane() {
 		HBox toolBox = new HBox();
+		toolBox.setStyle("-fx-padding: 4px;");
 		tabToolPane.getChildren().add(toolBox);
+		initToolButtons(toolBox);
 	}
 	
+	private void initToolButtons(HBox toolBox) {
+	}
 }

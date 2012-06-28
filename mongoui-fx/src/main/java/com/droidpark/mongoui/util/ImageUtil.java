@@ -33,4 +33,15 @@ public class ImageUtil {
 	
 	public static Image NEXT_NODE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "next_node_16_16.png"));
 	
+	
+	public static Image REFRESH_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "refresh_16_16.png"));
+	
+	public static Image ADD_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "add_16_16.png"));
+	
+	public static Image REMOVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "remove_16_16.png"));
+	
+	public static Image NEXT_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "next_16_16.png"));
+	
+	public static Image PREV_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "prev_16_16.png"));
+	
 }
