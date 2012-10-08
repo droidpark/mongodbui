@@ -11,7 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
-public class JSEditorTab extends Tab {
+public class JSEditorTab extends Tab implements UITab {
 
 	String script;
 	String title;
@@ -62,5 +62,9 @@ public class JSEditorTab extends Tab {
 		Button refresh = new Button("Refresh", new ImageView(ImageUtil.REFRESH_16_16));
 		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(refresh);
+	}
+
+	public void destroy() {
+		
 	}
 }

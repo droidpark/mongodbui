@@ -154,5 +154,14 @@ public class ModalDialog {
 		pane.setVisible(false);
 	}
 	
+	public void destroy() {
+		pane.prefWidthProperty().unbind();
+		pane.prefHeightProperty().unbind();
+		shadowPane.prefWidthProperty().unbind();
+		shadowPane.prefHeightProperty().unbind();
+		borderPane.prefHeightProperty().unbind();
+		borderPane.prefWidthProperty().unbind();
+	}
+	
 	class Delta {double x, y;}
 }

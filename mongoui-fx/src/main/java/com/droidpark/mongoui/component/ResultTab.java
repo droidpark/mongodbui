@@ -54,7 +54,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
-public class ResultTab extends Tab {
+public class ResultTab extends Tab implements UITab {
 
 	private Mongo mongo;
 	private String collectionName;
@@ -63,6 +63,7 @@ public class ResultTab extends Tab {
 	List<String> columns;
 	TableView<DBObject> tableView = new TableView<DBObject>();
 	ObservableList<DBObject> dataList;
+	TreeItem<CheckBox> rootField;
 	
 	AnchorPane tabToolPane;
 	AnchorPane tabFooterPane;
@@ -145,6 +146,7 @@ public class ResultTab extends Tab {
 			TableColumn<DBObject, String> column = new TableColumn<DBObject, String>();
 			column.setText(columnName);
 			column.setMinWidth(100);
+			
 			column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<DBObject,String>, ObservableValue<String>>() {
 				public ObservableValue<String> call(CellDataFeatures<DBObject, String> cell) {
 					if(cell.getValue() != null) {
@@ -190,7 +192,7 @@ public class ResultTab extends Tab {
 	}
 	
 	private void initColumnViewPane() {
-		TreeItem<CheckBox> rootField = new TreeItem<CheckBox>(new CheckBox(collectionName));
+		rootField = new TreeItem<CheckBox>(new CheckBox(collectionName));
 		rootField.setExpanded(true);
 		rootField.getValue().setDisable(true);
 		rootField.getValue().setSelected(true);
@@ -207,6 +209,7 @@ public class ResultTab extends Tab {
 						tempcolumn.add(column.getText());
 					}
 					int index = tempcolumn.indexOf(column);
+					tempcolumn.clear();
 					table.getColumns().get(index).setVisible(check.getValue().isSelected());
 				}
 			});
@@ -273,6 +276,28 @@ public class ResultTab extends Tab {
 	}
 	
 	private void initToolButtons(HBox toolBox) {
+	}
+	
+	public void destroy() {
+		tableView.prefHeightProperty().unbind();
+		tableView.prefWidthProperty().unbind();
+		columnAncPane.prefHeightProperty().unbind();
+		columnAncPane.prefWidthProperty().unbind();
+		columnTreePane.prefHeightProperty().unbind();
+		columnTreePane.prefWidthProperty().unbind();
+		columnTitledPane.prefHeightProperty().unbind();
+		columnTitledPane.prefWidthProperty().unbind();
+		footerBorder.prefWidthProperty().unbind();
+		footerBorder.prefHeightProperty().unbind();
+		tableView.getColumns().clear();
+		tableView.setItems(null);
+		tableView = null;
+		dataList.clear();
+		dataList = null;
+		columnTreePane.getRoot().getChildren().clear();
+		columnTreePane.setRoot(null);
+		rootField.getChildren().clear();
+		rootField = null;
 	}
 	
 }

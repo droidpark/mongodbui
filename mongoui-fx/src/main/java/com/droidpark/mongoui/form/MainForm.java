@@ -409,8 +409,9 @@ public class MainForm extends Application {
 		ConsoleUtil.init(webView);
 		ConsoleUtil.echo("Welcome to MongoUI 1.0 Beta.", ConsoleLabelEnum.MONGO_UI);
 	}
-	
+
 	private void connectToDatabaseModalDialog() {
+		
 		final ModalDialog dialog = new ModalDialog("Connect to Database", 250, 150, ImageUtil.DATABASE_24_24);
 		GridPane grid = new GridPane();
 		
@@ -425,11 +426,11 @@ public class MainForm extends Application {
 		final TextField portField = new TextField("27017");
 		grid.addRow(1, portLabel, portField);
 		dialog.setContent(grid);
-		
 		Button cancelButton = new Button("Cancel");
 		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				dialog.hideModalDialog();
+				dialog.destroy();
 			}
 		});
 		dialog.addNodeToFooter(cancelButton);
