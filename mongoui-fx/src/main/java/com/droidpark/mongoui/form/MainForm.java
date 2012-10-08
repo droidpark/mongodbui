@@ -4,16 +4,21 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.bson.BSONObject;
+
 import com.droidpark.mongoui.component.ModalDialog;
-import com.droidpark.mongoui.task.AddResultTabTask;
+import com.droidpark.mongoui.task.AddTabTask;
+import com.droidpark.mongoui.task.CreateJSEditorTab;
 import com.droidpark.mongoui.task.CreateResultTabTask;
 import com.droidpark.mongoui.util.DBTreeEnum;
 import com.droidpark.mongoui.util.ConsoleLabelEnum;
 import com.droidpark.mongoui.util.ConsoleUtil;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Util;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -336,7 +341,7 @@ public class MainForm extends Application {
 						DBTreeEnum treeEnum = DBTreeEnum.find(item.getParent().getValue());
 						switch (treeEnum) {
 							case COLLECTION: onClickCollectionItem(item); break;
-							case JAVASCRIPT: break;
+							case JAVASCRIPT: onClickJavaScriptItem(item); break;
 						}
 					}
 				}
@@ -366,11 +371,24 @@ public class MainForm extends Application {
 		taskThread.start();
 		
 		//Add Result tab to TabPane Task
-		AddResultTabTask addTabTask = new AddResultTabTask(task, tabPane);
+		AddTabTask addTabTask = new AddTabTask(task, tabPane);
 		Thread tabThread = new Thread(addTabTask);
 		tabThread.start();
 	}
 	
+	private void onClickJavaScriptItem(TreeItem<String> item) {
+		String database = item.getParent().getParent().getValue();
+		String stored = item.getValue();
+		
+		CreateJSEditorTab task = new CreateJSEditorTab(stored, database, mongo);
+		progressBar.progressProperty().bind(task.progressProperty());
+		Thread taskThread = new Thread(task);
+		taskThread.start();
+		
+		AddTabTask addTabTask = new AddTabTask(task, tabPane);
+		Thread tabThread = new Thread(addTabTask);
+		tabThread.start();
+	}
 	
 	//Init Console
 	private void initConsole() {

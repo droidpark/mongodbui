@@ -1,18 +1,18 @@
 package com.droidpark.mongoui.task;
 
-import com.droidpark.mongoui.component.ResultTab;
 import com.droidpark.mongoui.util.Util;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
-public class AddResultTabTask extends Task<Void> {
+public class AddTabTask extends Task<Void> {
 
-	private Task<ResultTab> resultTask;
+	private Task<?> resultTask;
 	private TabPane tabPane;
 	
-	public AddResultTabTask(Task<ResultTab> resultTask, TabPane tabPane) {
+	public AddTabTask(Task<?> resultTask, TabPane tabPane) {
 		this.resultTask = resultTask;
 		this.tabPane = tabPane;
 	}
@@ -24,8 +24,8 @@ public class AddResultTabTask extends Task<Void> {
 				Platform.runLater(new Runnable() { 
 				public void run() {
 					try {
-						tabPane.getTabs().add(resultTask.get());
-						tabPane.getSelectionModel().select(resultTask.get());
+						tabPane.getTabs().add((Tab)resultTask.get());
+						tabPane.getSelectionModel().select((Tab)resultTask.get());
 					}
 					catch (Exception e) {
 						e.printStackTrace();

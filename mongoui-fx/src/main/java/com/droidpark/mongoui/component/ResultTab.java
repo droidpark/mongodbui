@@ -28,6 +28,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -66,6 +67,13 @@ public class ResultTab extends Tab {
 	AnchorPane tabToolPane;
 	AnchorPane tabFooterPane;
 	SplitPane horizontalPane;
+	AnchorPane tableAncPane;
+	AnchorPane columnAncWrapPane;
+	AnchorPane columnAncPane;
+	TreeView<CheckBox> columnTreePane;
+	AnchorPane columnTreeWrapPane;
+	TitledPane columnTitledPane;
+	BorderPane footerBorder;
 	
 	int resultSize = 0;
 	private Gson gson = null;
@@ -124,7 +132,7 @@ public class ResultTab extends Tab {
 	}
 	
 	private void initResultTable() {
-		AnchorPane tableAncPane = new AnchorPane();
+		tableAncPane = new AnchorPane();
 		tableAncPane.getChildren().add(tableView);
 		
 		tableView.setMinSize(0, 0);
@@ -205,16 +213,16 @@ public class ResultTab extends Tab {
 			rootField.getChildren().add(check);
 		}
 		
-		AnchorPane columnAncWrapPane = new AnchorPane();
-		AnchorPane columnAncPane = new AnchorPane();
+		columnAncWrapPane = new AnchorPane();
+		columnAncPane = new AnchorPane();
 		columnAncPane.setMinSize(0, 0);
 		columnAncPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 		columnAncPane.prefHeightProperty().bind(columnAncWrapPane.heightProperty());
 		columnAncPane.prefWidthProperty().bind(columnAncWrapPane.widthProperty());
 		columnAncWrapPane.getChildren().add(columnAncPane);
 		
-		TreeView<CheckBox> columnTreePane = new TreeView<CheckBox>(rootField);
-		AnchorPane columnTreeWrapPane = new AnchorPane();
+		columnTreePane = new TreeView<CheckBox>(rootField);
+		columnTreeWrapPane = new AnchorPane();
 		columnTreeWrapPane.setPrefWidth(150);
 		columnTreeWrapPane.setMinSize(0, 0);
 		columnTreeWrapPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
@@ -223,7 +231,7 @@ public class ResultTab extends Tab {
 		columnTreePane.prefHeightProperty().bind(columnTreeWrapPane.heightProperty());
 		columnTreePane.prefWidthProperty().bind(columnTreeWrapPane.widthProperty());
 		
-		TitledPane columnTitledPane = new TitledPane("Collection Fields", columnTreeWrapPane);
+		columnTitledPane = new TitledPane("Collection Fields", columnTreeWrapPane);
 		columnTitledPane.prefHeightProperty().bind(columnAncPane.heightProperty());
 		columnTitledPane.prefWidthProperty().bind(columnAncPane.widthProperty());
 		columnTitledPane.setCollapsible(false);
@@ -232,19 +240,19 @@ public class ResultTab extends Tab {
 	}
 	
 	private void initFooterPane() {
-		BorderPane border = new BorderPane();
-		border.prefWidthProperty().bind(tabFooterPane.widthProperty());
-		border.prefHeightProperty().bind(tabFooterPane.heightProperty());
-		tabFooterPane.getChildren().add(border);
+		footerBorder = new BorderPane();
+		footerBorder.prefWidthProperty().bind(tabFooterPane.widthProperty());
+		footerBorder.prefHeightProperty().bind(tabFooterPane.heightProperty());
+		tabFooterPane.getChildren().add(footerBorder);
 		
 		HBox resultInfoBox = new HBox();
-		border.setLeft(resultInfoBox);
+		footerBorder.setLeft(resultInfoBox);
 		resultInfoBox.getChildren().add(new Label("Result: "));
 		resultInfoBox.getChildren().add(new Label(resultSize + " items."));
 		resultInfoBox.setStyle("-fx-padding: 4px;");
 		
 		HBox resultNavBox = new HBox();
-		border.setRight(resultNavBox);
+		footerBorder.setRight(resultNavBox);
 		Button prev = new Button("", new ImageView(ImageUtil.PREV_16_16));
 		prev.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		resultNavBox.getChildren().add(prev);
@@ -266,4 +274,5 @@ public class ResultTab extends Tab {
 	
 	private void initToolButtons(HBox toolBox) {
 	}
+	
 }

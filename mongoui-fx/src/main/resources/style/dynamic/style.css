@@ -193,6 +193,15 @@
 	-fx-border-width: 0px 0px 1px 0px;
 }
 
+.-mongoui-tab-toolpane *.button, .-mongoui-tab-toolpane  *.toggle-button {
+	-fx-background-color: null;
+	-fx-text-origin: bottom;
+	-fx-padding:2px 5px;
+	-fx-border-style: solid;
+	-fx-border-color: #CCC;
+	-fx-border-width: 0px 1px 0px 0px;
+}
+
 .-mongoui-tab-footerpane {
 	-fx-border-style: solid;
 	-fx-border-color: #FFF;

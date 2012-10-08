@@ -23,13 +23,15 @@ public class CreateResultTabTask extends Task<ResultTab> {
 		try {
 			updateProgress(-1, 1);
 			ResultTab tab = new ResultTab(collection, database, mongo);
-			updateProgress(1, 1);
 			return tab;
-		 }
-		 catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
-			 return null;
-		 }
+			return null;
+		}
+		finally {
+			updateProgress(1, 1);
+		}
 	}
 
 }

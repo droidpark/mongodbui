@@ -39,9 +39,12 @@ public class ImageUtil {
 	public static Image ADD_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "add_16_16.png"));
 	
 	public static Image REMOVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "remove_16_16.png"));
+	public static Image REMOVE2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "remove2_16_16.png"));
 	
 	public static Image NEXT_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "next_16_16.png"));
 	
 	public static Image PREV_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "prev_16_16.png"));
+	
+	public static Image SAVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "save_16_16.png"));
 	
 }
