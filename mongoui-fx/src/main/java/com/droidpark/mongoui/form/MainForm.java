@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
@@ -40,12 +43,11 @@ import com.droidpark.mongoui.component.ModalDialog;
 import com.droidpark.mongoui.task.AddTabTask;
 import com.droidpark.mongoui.task.CreateJSEditorTab;
 import com.droidpark.mongoui.task.CreateResultTabTask;
-import com.droidpark.mongoui.util.ConsoleLabelEnum;
-import com.droidpark.mongoui.util.ConsoleUtil;
 import com.droidpark.mongoui.util.DBTreeEnum;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
 import com.droidpark.mongoui.util.LanguageConstants;
+import com.droidpark.mongoui.util.Log4jTextAreaAppender;
 import com.droidpark.mongoui.util.Util;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -55,6 +57,8 @@ import com.mongodb.Mongo;
 
 public class MainForm extends Application {
 
+	private static Logger logger = Logger.getLogger(MainForm.class);
+	
 	private Stage stage;
 	private Scene scene;
 	private AnchorPane pane;
@@ -66,13 +70,15 @@ public class MainForm extends Application {
 	private BorderPane consolePane;
 	private AnchorPane centerPane;
 	private TabPane tabPane;
-	private WebView webView;
+	private TextArea consoleTextArea = new TextArea();
+	
 	private final ProgressBar progressBar = new ProgressBar();
 	
 	private Mongo mongo;
 	
 	@Override
 	public void start(Stage primary) throws Exception {
+		Log4jTextAreaAppender.initTextArea(consoleTextArea);
 		stage = primary;
 		initComponent();
 		stage.show();
@@ -347,16 +353,16 @@ public class MainForm extends Application {
 				}
 			});
 			
-			ConsoleUtil.echo("Successfully connected to " + host + ".", ConsoleLabelEnum.MONGO_UI);
+			logger.info("Successfully connected to " + host + ".");
 		}
 		catch (UnknownHostException e) {
 			databasePane.getChildren().clear();
-			ConsoleUtil.echo("Unknown Host: " + e.getMessage(), ConsoleLabelEnum.ERROR);
+			logger.warn("Unknown Host: " + e.getMessage());
+			logger.debug(e.getMessage(),e);
 		}
 		catch (Exception e) {
 			databasePane.getChildren().clear();
-			ConsoleUtil.echo(e.getMessage(), ConsoleLabelEnum.ERROR);
-			e.printStackTrace();
+			logger.debug(e.getMessage(), e);
 		}
 	}
 	
@@ -398,16 +404,11 @@ public class MainForm extends Application {
 		consoleTextWrap.prefHeightProperty().bind(consolePane.heightProperty());
 		consoleTextWrap.prefWidthProperty().bind(consolePane.widthProperty());
 		
-		
-		webView = new WebView();
-		webView.prefWidthProperty().bind(consoleTextWrap.prefWidthProperty());
-		webView.prefHeightProperty().bind(consoleTextWrap.prefHeightProperty());
-		webView.autosize();
-		consoleTextWrap.getChildren().add(webView);
+		consoleTextArea.prefWidthProperty().bind(consoleTextWrap.prefWidthProperty());
+		consoleTextArea.prefHeightProperty().bind(consoleTextWrap.prefHeightProperty());
+		consoleTextWrap.getChildren().add(consoleTextArea);
 		
 		consolePane.getChildren().add(consoleTextWrap);
-		ConsoleUtil.init(webView);
-		ConsoleUtil.echo("Welcome to MongoUI 1.0 Beta.", ConsoleLabelEnum.MONGO_UI);
 	}
 
 	private void connectToDatabaseModalDialog() {

@@ -7,6 +7,12 @@
 		</layout>
 	</appender>
 	
+	<appender name="mongouiConsoleAppender" class="com.droidpark.mongoui.util.Log4jTextAreaAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %m\n" />
+		</layout>
+	</appender>
+	
 	<appender name="R" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="log/mongui.log" />
 		<param name="MaxFileSize" value="1000KB" />
@@ -20,5 +26,6 @@
 		<priority value="INFO" />
 		<appender-ref ref="consoleAppender" />
 		<appender-ref ref="R" />
+		<appender-ref ref="mongouiConsoleAppender" />
 	</root>
 </log4j:configuration>

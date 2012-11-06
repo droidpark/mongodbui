@@ -7,10 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
-import com.droidpark.mongoui.util.ConsoleLabelEnum;
-import com.droidpark.mongoui.util.ConsoleUtil;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,6 +55,8 @@ import javafx.util.Callback;
 
 public class ResultTab extends Tab implements UITab {
 
+	private static Logger logger = Logger.getLogger(ResultTab.class);
+	
 	private Mongo mongo;
 	private String collectionName;
 	private String databaseName;
@@ -112,9 +113,9 @@ public class ResultTab extends Tab implements UITab {
 			DB database = mongo.getDB(databaseName);
 			DBCollection collection = database.getCollection(collectionName);
 			resultSize = collection.find(new BasicDBObject()).size();
-			ConsoleUtil.echo("db." + collectionName + ".find().size()", ConsoleLabelEnum.QUERY);
+			logger.info("db." + collectionName + ".find().size()");
 			DBCursor cursor = collection.find(new BasicDBObject()).limit(20);
-			ConsoleUtil.echo("db." + collectionName + ".find().limit(20)", ConsoleLabelEnum.QUERY);
+			logger.info("db." + collectionName + ".find().limit(20)");
 			Set<String> columnsSet = new HashSet<String>();
 			while(cursor.hasNext()) {
 				DBObject object = cursor.next();
