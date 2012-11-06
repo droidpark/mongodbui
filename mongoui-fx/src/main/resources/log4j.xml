@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{1}\t%m\n" />
+		</layout>
+	</appender>
+	
+	<appender name="R" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="log/mongui.log" />
+		<param name="MaxFileSize" value="1000KB" />
+		<param name="MaxBackupIndex" value="20" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%F] - %m%n" />
+		</layout>
+	</appender>
+	
+	<root>
+		<priority value="INFO" />
+		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="R" />
+	</root>
+</log4j:configuration>

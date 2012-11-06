@@ -64,6 +64,7 @@
 							            <fileset dir="${project.build.directory}" includes="lib/junit*.jar"/>
 							            <fileset dir="${project.build.directory}" includes="lib/mongo*.jar"/>
 							            <fileset dir="${project.build.directory}" includes="lib/gson*.jar"/>
+							            <fileset dir="${project.build.directory}" includes="lib/log4j*.jar"/>
 							        </resources>
 							    </jfxjar>
 							</target>
@@ -112,6 +113,12 @@
 			<version>2.1</version>
 			<systemPath>${javafx.rt.jar}</systemPath>
 			<scope>system</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>1.2.17</version>
 		</dependency>
 	</dependencies>
 
