@@ -2,10 +2,11 @@ package com.droidpark.mongoui.util;
 
 public final class LanguageConstants {
 
-	public static final String DATABASE = "Database";
-	public static final String COLLECTION = "Collection";
-	public static final String JAVASCRIPT = "Javascript";
-	public static final String SERVER_STATUS = "Server Status";
-	public static final String SHARDING = "Sharding";
-	public static final String SETTINGS = "Settings";
+	public static final String MAIN_MENU_DATABASE = "main.menu.database";
+	public static final String MAIN_MENU_COLLECTION = "main.menu.collection";
+	public static final String MAIN_MENU_JAVASCRIPT = "main.menu.javascript";
+	public static final String MAIN_MENU_SERVER_STATUS = "main.menu.server_status";
+	public static final String MAIN_MENU_SHARDING = "main.menu.sharding";
+	public static final String MAIN_MENU_SETTINGS = "main.menu.settings";
+	public static final String MAIN_MENU_INDEX = "main.menu.index";
 }
