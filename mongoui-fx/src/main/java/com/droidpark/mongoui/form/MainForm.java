@@ -4,8 +4,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import static com.droidpark.mongoui.util.LanguageConstants.DATABASE;
+import static com.droidpark.mongoui.util.LanguageConstants.COLLECTION;
+import static com.droidpark.mongoui.util.LanguageConstants.JAVASCRIPT;
+import static com.droidpark.mongoui.util.LanguageConstants.SERVER_STATUS;
+import static com.droidpark.mongoui.util.LanguageConstants.SHARDING;
+import static com.droidpark.mongoui.util.LanguageConstants.SETTINGS;
 
 import org.bson.BSONObject;
 
@@ -108,7 +114,7 @@ public class MainForm extends Application {
 		stage.setScene(scene);
 		stage.centerOnScreen();
 		progressBar.setProgress(0);
-		ModalDialog.MAIN_FRAME = pane;
+		Util.MAIN_FRAME = pane;
 	}
 	
 	/**
@@ -224,7 +230,7 @@ public class MainForm extends Application {
 	private void initToolBarButtons() {
 		
 		//Connection Database
-		Button createConnectionButton = new Button("Database", new ImageView(ImageUtil.DATABASE_24_24));
+		Button createConnectionButton = new Button(DATABASE, new ImageView(ImageUtil.DATABASE_24_24));
 		createConnectionButton.setContentDisplay(ContentDisplay.TOP);
 		createConnectionButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
@@ -234,7 +240,7 @@ public class MainForm extends Application {
 		toolBar.getItems().add(createConnectionButton);
 		
 		//Add Collection
-		Button addCollectionButton = new Button("Collection", new ImageView(ImageUtil.COLLECTION_24_24));
+		Button addCollectionButton = new Button(COLLECTION, new ImageView(ImageUtil.COLLECTION_24_24));
 		addCollectionButton.setContentDisplay(ContentDisplay.TOP);
 		toolBar.getItems().add(addCollectionButton);
 		
@@ -244,23 +250,23 @@ public class MainForm extends Application {
 		toolBar.getItems().add(addIndexButton); 
 		
 		//JavaScript
-		Button javaScriptButton = new Button("JavaScript", new ImageView(ImageUtil.JAVASCRIPT_24_24));
+		Button javaScriptButton = new Button(JAVASCRIPT, new ImageView(ImageUtil.JAVASCRIPT_24_24));
 		javaScriptButton.setContentDisplay(ContentDisplay.TOP);
 		toolBar.getItems().add(javaScriptButton);
 		
 		//Server Status
-		Button statusButton = new Button("Server Status", new ImageView(ImageUtil.SYSTEM_MONITOR_24_24));
+		Button statusButton = new Button(SERVER_STATUS, new ImageView(ImageUtil.SYSTEM_MONITOR_24_24));
 		statusButton.setContentDisplay(ContentDisplay.TOP);
 		toolBar.getItems().add(statusButton);
 		
 		
 		//Sharding
-		Button toolsButton = new Button("Sharding", new ImageView(ImageUtil.TOOLS_24_24));
+		Button toolsButton = new Button(SHARDING, new ImageView(ImageUtil.TOOLS_24_24));
 		toolsButton.setContentDisplay(ContentDisplay.TOP);
 		toolBar.getItems().add(toolsButton);
 		
 		//Settigns
-		Button settingsButton = new Button("Settings", new ImageView(ImageUtil.SETTINGS_24_24));
+		Button settingsButton = new Button(SETTINGS, new ImageView(ImageUtil.SETTINGS_24_24));
 		settingsButton.setContentDisplay(ContentDisplay.TOP);
 		toolBar.getItems().add(settingsButton);
 	}

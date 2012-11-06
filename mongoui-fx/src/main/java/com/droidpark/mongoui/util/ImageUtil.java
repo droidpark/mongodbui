@@ -35,6 +35,7 @@ public class ImageUtil {
 	
 	
 	public static Image REFRESH_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "refresh_16_16.png"));
+	public static Image REFRESH2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "refresh2_16_16.png"));
 	
 	public static Image ADD_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "add_16_16.png"));
 	
@@ -46,5 +47,10 @@ public class ImageUtil {
 	public static Image PREV_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "prev_16_16.png"));
 	
 	public static Image SAVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "save_16_16.png"));
+	public static Image SAVE2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "save2_16_16.png"));
 	
+	public static Image DB_ADD_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_add_16_16.png"));
+	public static Image DB_REMOVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_remove_16_16.png"));
+	public static Image DB_FILTER_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_filter_16_16.png"));
+	public static Image DB_REFRESH_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_refresh_16_16.png"));
 }

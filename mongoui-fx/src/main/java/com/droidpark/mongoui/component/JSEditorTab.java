@@ -51,7 +51,7 @@ public class JSEditorTab extends Tab implements UITab {
 	}
 	
 	private void initToolPaneButtons(HBox toolBox) {
-		Button save = new Button("Save", new ImageView(ImageUtil.SAVE_16_16));
+		Button save = new Button("Save", new ImageView(ImageUtil.SAVE2_16_16));
 		save.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(save);
 		
@@ -59,7 +59,7 @@ public class JSEditorTab extends Tab implements UITab {
 		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(remove);
 		
-		Button refresh = new Button("Refresh", new ImageView(ImageUtil.REFRESH_16_16));
+		Button refresh = new Button("Refresh", new ImageView(ImageUtil.REFRESH2_16_16));
 		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(refresh);
 	}

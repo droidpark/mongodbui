@@ -63,7 +63,7 @@ public class ResultTab extends Tab implements UITab {
 	List<String> columns;
 	TableView<DBObject> tableView = new TableView<DBObject>();
 	ObservableList<DBObject> dataList;
-	TreeItem<CheckBox> rootField;
+	
 	
 	AnchorPane tabToolPane;
 	AnchorPane tabFooterPane;
@@ -192,7 +192,7 @@ public class ResultTab extends Tab implements UITab {
 	}
 	
 	private void initColumnViewPane() {
-		rootField = new TreeItem<CheckBox>(new CheckBox(collectionName));
+		TreeItem<CheckBox> rootField = new TreeItem<CheckBox>(new CheckBox(collectionName));
 		rootField.setExpanded(true);
 		rootField.getValue().setDisable(true);
 		rootField.getValue().setSelected(true);
@@ -276,6 +276,21 @@ public class ResultTab extends Tab implements UITab {
 	}
 	
 	private void initToolButtons(HBox toolBox) {
+		Button refresh = new Button("Refresh", new ImageView(ImageUtil.DB_REFRESH_16_16));
+		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(refresh);
+		
+		Button add = new Button("Add", new ImageView(ImageUtil.DB_ADD_16_16));
+		add.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(add);
+		
+		Button remove = new Button("Remove", new ImageView(ImageUtil.DB_REMOVE_16_16));
+		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(remove);
+		
+		Button filter = new Button("Filter", new ImageView(ImageUtil.DB_FILTER_16_16));
+		filter.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(filter);
 	}
 	
 	public void destroy() {
@@ -295,9 +310,7 @@ public class ResultTab extends Tab implements UITab {
 		dataList.clear();
 		dataList = null;
 		columnTreePane.getRoot().getChildren().clear();
-		columnTreePane.setRoot(null);
-		rootField.getChildren().clear();
-		rootField = null;
+		columnTreePane.setRoot(new TreeItem<CheckBox>());
 	}
 	
 }

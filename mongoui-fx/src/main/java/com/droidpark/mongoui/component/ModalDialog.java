@@ -1,6 +1,9 @@
 package com.droidpark.mongoui.component;
 
 
+import com.droidpark.mongoui.util.Util;
+
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -16,7 +19,6 @@ import javafx.scene.layout.HBox;
 
 public class ModalDialog {
 
-	public static AnchorPane MAIN_FRAME;
 	private AnchorPane shadowPane;
 	private AnchorPane main;
 	private AnchorPane pane;
@@ -57,8 +59,8 @@ public class ModalDialog {
 	
 	private void initDiaglog() {
 		pane = new AnchorPane();
-		pane.prefWidthProperty().bind(MAIN_FRAME.widthProperty());
-		pane.prefHeightProperty().bind(MAIN_FRAME.heightProperty());
+		pane.prefWidthProperty().bind(Util.MAIN_FRAME.widthProperty());
+		pane.prefHeightProperty().bind(Util.MAIN_FRAME.heightProperty());
 		pane.setVisible(false);
 		pane.getStyleClass().add("-mongoui-modal");
 		shadowPane = new AnchorPane();
@@ -145,13 +147,21 @@ public class ModalDialog {
 	}
 	
 	public void showModalDialog() {
-		MAIN_FRAME.getChildren().add(pane);
-		pane.setVisible(true);
+		Platform.runLater(new Runnable() {
+			public void run() {
+				Util.MAIN_FRAME.getChildren().add(pane);
+				pane.setVisible(true);
+			}
+		});
 	}
 
 	public void hideModalDialog() {
-		MAIN_FRAME.getChildren().remove(pane);
-		pane.setVisible(false);
+		Platform.runLater(new Runnable() {
+			public void run() {
+				Util.MAIN_FRAME.getChildren().remove(pane);
+				pane.setVisible(false);
+			}
+		});
 	}
 	
 	public void destroy() {
