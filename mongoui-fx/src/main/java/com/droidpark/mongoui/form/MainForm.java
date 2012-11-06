@@ -13,23 +13,12 @@ import static com.droidpark.mongoui.util.LanguageConstants.SERVER_STATUS;
 import static com.droidpark.mongoui.util.LanguageConstants.SHARDING;
 import static com.droidpark.mongoui.util.LanguageConstants.SETTINGS;
 
-import org.bson.BSONObject;
-
-import com.droidpark.mongoui.component.ModalDialog;
-import com.droidpark.mongoui.task.AddTabTask;
-import com.droidpark.mongoui.task.CreateJSEditorTab;
-import com.droidpark.mongoui.task.CreateResultTabTask;
-import com.droidpark.mongoui.util.DBTreeEnum;
-import com.droidpark.mongoui.util.ConsoleLabelEnum;
-import com.droidpark.mongoui.util.ConsoleUtil;
-import com.droidpark.mongoui.util.ImageUtil;
-import com.droidpark.mongoui.util.Util;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import static com.droidpark.mongoui.util.LanguageConstants.DATABASE;
+import static com.droidpark.mongoui.util.LanguageConstants.COLLECTION;
+import static com.droidpark.mongoui.util.LanguageConstants.JAVASCRIPT;
+import static com.droidpark.mongoui.util.LanguageConstants.SERVER_STATUS;
+import static com.droidpark.mongoui.util.LanguageConstants.SHARDING;
+import static com.droidpark.mongoui.util.LanguageConstants.SETTINGS;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -58,6 +47,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+
+import com.droidpark.mongoui.component.ModalDialog;
+import com.droidpark.mongoui.task.AddTabTask;
+import com.droidpark.mongoui.task.CreateJSEditorTab;
+import com.droidpark.mongoui.task.CreateResultTabTask;
+import com.droidpark.mongoui.util.ConsoleLabelEnum;
+import com.droidpark.mongoui.util.ConsoleUtil;
+import com.droidpark.mongoui.util.DBTreeEnum;
+import com.droidpark.mongoui.util.ImageUtil;
+import com.droidpark.mongoui.util.Util;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 
 public class MainForm extends Application {
 
