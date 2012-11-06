@@ -13,13 +13,6 @@ import static com.droidpark.mongoui.util.LanguageConstants.SERVER_STATUS;
 import static com.droidpark.mongoui.util.LanguageConstants.SHARDING;
 import static com.droidpark.mongoui.util.LanguageConstants.SETTINGS;
 
-import static com.droidpark.mongoui.util.LanguageConstants.DATABASE;
-import static com.droidpark.mongoui.util.LanguageConstants.COLLECTION;
-import static com.droidpark.mongoui.util.LanguageConstants.JAVASCRIPT;
-import static com.droidpark.mongoui.util.LanguageConstants.SERVER_STATUS;
-import static com.droidpark.mongoui.util.LanguageConstants.SHARDING;
-import static com.droidpark.mongoui.util.LanguageConstants.SETTINGS;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
