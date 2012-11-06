@@ -1,15 +1,14 @@
 package com.droidpark.mongoui.task;
 
-import com.droidpark.mongoui.component.ResultTab;
-import com.droidpark.mongoui.component.UITab;
-import com.droidpark.mongoui.util.Util;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+
+import com.droidpark.mongoui.component.UITab;
+import com.droidpark.mongoui.util.Util;
 
 public class AddTabTask extends Task<Void> {
 
