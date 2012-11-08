@@ -198,8 +198,15 @@
 	-fx-text-origin: bottom;
 	-fx-padding:2px 5px;
 	-fx-border-style: solid;
-	-fx-border-color: #CCC;
+	-fx-border-color: #e1e1e1;
 	-fx-border-width: 0px 1px 0px 0px;
+}
+
+.-mongoui-tab-toolpane *.button:hover, .-mongoui-tab-toolpane  *.toggle-button:hover {
+	-fx-background-color: #e1e1e1;
+	-fx-cursor: hand;
+	-fx-effect: null;
+	-fx-background-radius: 0px;
 }
 
 .-mongoui-tab-footerpane {
@@ -231,6 +238,10 @@
 }
 
 .-mongoui-modal-content {
+}
+
+.-mongoui-modal-scrollpane, .-mongoui-modal-scrollpane:focused,  .-mongoui-modal-scrollpane:pressed{
+	-fx-border-style: none;
 }
 
 .-mongoui-modal-footer {

@@ -7,55 +7,63 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.droidpark.mongoui.util.ImageUtil;
+import com.droidpark.mongoui.util.Language;
+import com.droidpark.mongoui.util.LanguageConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.util.JSON;
 
-import javafx.application.Platform;
+import static com.droidpark.mongoui.util.LanguageConstants.*;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.util.Callback;
 
 public class ResultTab extends Tab implements UITab {
 
 	private static Logger logger = Logger.getLogger(ResultTab.class);
+	private Integer dataLimitValue = 100;
+	private Integer dataSkipValue = 0;
 	
 	private Mongo mongo;
 	private String collectionName;
@@ -77,6 +85,10 @@ public class ResultTab extends Tab implements UITab {
 	TitledPane columnTitledPane;
 	BorderPane footerBorder;
 	
+	ModalDialog filterDialog = null;
+	
+	Label resultSizeLabel = new Label();
+	
 	int resultSize = 0;
 	private Gson gson = null;
 	
@@ -90,11 +102,12 @@ public class ResultTab extends Tab implements UITab {
 	
 	private void initComponent() {
 		initLayout();
-		initDataListAndColumnList();
+		initDataListAndColumnList(null);
 		initResultTable();
 		initColumnViewPane();
 		initFooterPane();
 		initToolPane();
+		initFilterDialog();
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setTop(tabToolPane);
@@ -103,22 +116,28 @@ public class ResultTab extends Tab implements UITab {
 		setContent(borderPane);
 	}
 	
-	private void initDataListAndColumnList() {
+	private void initDataListAndColumnList(BasicDBObject query) {
 		try {
 			dataList = FXCollections.observableArrayList();
 			columns = new ArrayList<String>();
+			query = query == null ? new BasicDBObject() : query;
 			
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gson = gsonBuilder.serializeNulls().create();
 			DB database = mongo.getDB(databaseName);
 			DBCollection collection = database.getCollection(collectionName);
-			resultSize = collection.find(new BasicDBObject()).size();
-			logger.info("db." + collectionName + ".find().size()");
-			DBCursor cursor = collection.find(new BasicDBObject()).limit(20);
-			logger.info("db." + collectionName + ".find().limit(20)");
+			
+			resultSize = collection.find(query).skip(dataSkipValue).limit(dataLimitValue).size();
+			resultSizeLabel.setText(resultSize + " Row(s)");
+			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").limit("+dataLimitValue+").size()");
+			
+			DBCursor cursor = collection.find(query).skip(dataSkipValue).limit(dataLimitValue);
+			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").limit("+dataLimitValue+")");
+			
 			Set<String> columnsSet = new HashSet<String>();
 			while(cursor.hasNext()) {
 				DBObject object = cursor.next();
+				object.isPartialObject();
 				dataList.add(object);
 				for(String column : object.keySet()) {
 					columnsSet.add(column);
@@ -142,7 +161,12 @@ public class ResultTab extends Tab implements UITab {
 		tableView.prefWidthProperty().bind(tableAncPane.widthProperty());
 		
 		horizontalPane.getItems().add(tableAncPane);
+		refreshTableView();
 		
+	}
+	
+	private void refreshTableView() {
+		clearTableViewData();
 		for(final String columnName : columns) {
 			TableColumn<DBObject, String> column = new TableColumn<DBObject, String>();
 			column.setText(columnName);
@@ -176,6 +200,11 @@ public class ResultTab extends Tab implements UITab {
 			tableView.getSelectionModel().setCellSelectionEnabled(true);
 			tableView.setItems(dataList);
 		}
+	}
+	
+	private void clearTableViewData() {
+		tableView.getColumns().clear();
+		tableView.getItems().clear();
 	}
 	
 	private void initLayout() {
@@ -252,7 +281,7 @@ public class ResultTab extends Tab implements UITab {
 		HBox resultInfoBox = new HBox();
 		footerBorder.setLeft(resultInfoBox);
 		resultInfoBox.getChildren().add(new Label("Result: "));
-		resultInfoBox.getChildren().add(new Label(resultSize + " items."));
+		resultInfoBox.getChildren().add(resultSizeLabel);
 		resultInfoBox.setStyle("-fx-padding: 4px;");
 		
 		HBox resultNavBox = new HBox();
@@ -291,8 +320,91 @@ public class ResultTab extends Tab implements UITab {
 		
 		Button filter = new Button("Filter", new ImageView(ImageUtil.DB_FILTER_16_16));
 		filter.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		filter.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				filterDialog.showModalDialog();
+			}
+		});
 		toolBox.getChildren().add(filter);
 	}
+	
+	private void initFilterDialog() {
+		filterDialog = new ModalDialog(Language.get(DIALOG_TITLE_FILTER), 400, 150, ImageUtil.DATABASE_24_24);
+		final ModalDialog dialog = filterDialog;
+		
+		final GridPane grid = new GridPane();
+		grid.setStyle("-fx-padding: 10px;");
+		//query
+		Label queryLabel = new Label(Language.get(LABEL_QUERY) + ": ");
+		queryLabel.setStyle("-fx-padding: 0px 10px 0px 0px;");
+		grid.add(queryLabel, 0,0);
+		final TextField queryText = new TextField();
+		grid.add(queryText, 1,0,5,1);
+		
+		
+		//Sort
+		Label sortLabel = new Label(Language.get(LABEL_SORT) + ": ");
+		sortLabel.setStyle("-fx-padding: 0px 10px 0px 0px;");
+		grid.add(sortLabel,0,1);
+		final TextField sortText = new TextField();
+		sortText.setPrefWidth(100);
+		grid.add(sortText, 1,1);
+		
+		//Skip
+		Label skipLabel = new Label(Language.get(LABEL_SKIP) + ": ");
+		skipLabel.setStyle("-fx-padding: 0px 10px 0px 20px;");
+		grid.add(skipLabel, 2, 1);
+		final TextField skipText = new TextField(dataSkipValue.toString());
+		skipText.setPrefWidth(50);
+		grid.add(skipText, 3, 1);
+		
+		//Limit
+		Label limitLabel = new Label(Language.get(LABEL_LIMIT) + ": ");
+		limitLabel.setStyle("-fx-padding: 0px 10px 0px 20px;");
+		grid.add(limitLabel, 4, 1);
+		final TextField limitText = new TextField(dataLimitValue.toString());
+		limitText.setPrefWidth(50);
+		grid.add(limitText, 5, 1);
+		
+		dialog.setContent(grid);
+		
+		Button cancelButton = new Button(Language.get(BUTTON_CANCEL));
+		dialog.addNodeToFooter(cancelButton);
+		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				dialog.hideModalDialog();
+			}
+		});
+		
+		Button filterButton = new Button(Language.get(BUTTON_FILTER));
+		dialog.addNodeToFooter(filterButton);
+		filterButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				try {
+					BasicDBObject query = (BasicDBObject) JSON.parse(queryText.getText());
+					dataLimitValue = Integer.valueOf(limitText.getText());
+					dataSkipValue = Integer.valueOf(skipText.getText());
+					initDataListAndColumnList(query);
+					refreshTableView();
+					dialog.hideModalDialog();
+				}
+				catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		});
+		
+	}
+	
+	private String getFilterChar(String val) {
+		if(val == ">") return "$gt";
+		else if(val == "<") return "$lt";
+		else if(val == ">=") return "$gte";
+		else if(val == "<=") return "$lte";
+		else if(val == "exists") return "exists";
+		else return null;
+	}
+	
 	
 	public void destroy() {
 		tableView.prefHeightProperty().unbind();
@@ -312,6 +424,7 @@ public class ResultTab extends Tab implements UITab {
 		dataList = null;
 		columnTreePane.getRoot().getChildren().clear();
 		columnTreePane.setRoot(new TreeItem<CheckBox>());
+		filterDialog.destroy();
 	}
 	
 }

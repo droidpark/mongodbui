@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -22,6 +23,7 @@ public class ModalDialog {
 	private AnchorPane shadowPane;
 	private AnchorPane main;
 	private AnchorPane pane;
+	ScrollPane scrollPane;
 	
 	BorderPane borderPane;
 	private HBox header;
@@ -113,11 +115,19 @@ public class ModalDialog {
 	}
 	
 	private void initContent() {
+		AnchorPane anchorPane = new AnchorPane();
+		
 		content = new AnchorPane();
 		content.getStyleClass().add("-mongoui-modal-content");
-		AnchorPane contentWrap = new AnchorPane();
-		contentWrap.getChildren().add(content);
-		borderPane.setCenter(contentWrap);
+		
+		scrollPane = new ScrollPane();
+		scrollPane.getStyleClass().add("-mongoui-modal-scrollpane");
+		scrollPane.setContent(content);
+		scrollPane.prefHeightProperty().bind(anchorPane.heightProperty());
+		scrollPane.prefWidthProperty().bind(anchorPane.widthProperty());
+		
+		anchorPane.getChildren().add(scrollPane);
+		borderPane.setCenter(anchorPane);
 	}
 	
 	private void initHeaderDrag() {
@@ -171,6 +181,8 @@ public class ModalDialog {
 		shadowPane.prefHeightProperty().unbind();
 		borderPane.prefHeightProperty().unbind();
 		borderPane.prefWidthProperty().unbind();
+		scrollPane.prefHeightProperty().unbind();
+		scrollPane.prefWidthProperty().unbind();
 	}
 	
 	class Delta {double x, y;}
