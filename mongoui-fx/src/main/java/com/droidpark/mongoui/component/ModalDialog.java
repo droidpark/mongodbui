@@ -1,7 +1,7 @@
 package com.droidpark.mongoui.component;
 
 
-import static com.droidpark.mongoui.util.LanguageConstants.BUTTON_OK;
+import static com.droidpark.mongoui.util.LanguageConstants.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -201,6 +201,23 @@ public class ModalDialog {
 				dialog.destroy();
 			}
 		});
+		return dialog;
+	}
+	
+	public static ModalDialog createYesNoQuestionDialog(String title, String message) {
+		final ModalDialog dialog = new ModalDialog(title, 350, 150, getDialogIcon(QUESTION));
+		Label label = new Label(message);
+		label.setStyle("-fx-padding: 10px;");
+		dialog.setContent(label);
+		Button noButton = new Button(Language.get(BUTTON_NO));
+		dialog.addNodeToFooter(noButton);
+		noButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				dialog.hideModalDialog();
+				dialog.destroy();
+			}
+		});
+		
 		return dialog;
 	}
 	

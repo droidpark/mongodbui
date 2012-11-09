@@ -14,8 +14,13 @@ public final class LanguageConstants {
 	public static final String BUTTON_OK = "button.ok";
 	public static final String BUTTON_RESET = "button.reset"; 
 	public static final String BUTTON_FILTER = "button.filter";
+	public static final String BUTTON_NO = "button.no";
+	public static final String BUTTON_YES = "button.yes";
 	
 	public static final String DIALOG_TITLE_FILTER = "dialog.title.filter";
+	public static final String DIALOG_TITTLE_REMOVE = "dialog.title.remove_document";
+	
+	public static final String MESSAGE_ARE_YOU_SURE = "message.are_you_sure";
 	
 	public static final String LABEL_QUERY = "label.query";
 	public static final String LABEL_SORT = "label.sort";

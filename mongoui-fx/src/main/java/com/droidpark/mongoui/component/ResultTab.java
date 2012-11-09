@@ -63,6 +63,8 @@ public class ResultTab extends Tab implements UITab {
 	private String collectionName;
 	private String databaseName;
 	
+	private DB database = null; 
+	private DBCollection collection = null;
 	List<String> columns;
 	TableView<DBObject> tableView = new TableView<DBObject>();
 	ObservableList<DBObject> dataList;
@@ -87,6 +89,8 @@ public class ResultTab extends Tab implements UITab {
 	int resultSize = 0;
 	private Gson gson = null;
 	
+	BasicDBObject query = null;
+	
 	public ResultTab(String collection, String database, Mongo mongo) {
 		super(database + "." + collection);
 		this.collectionName = collection;
@@ -97,7 +101,7 @@ public class ResultTab extends Tab implements UITab {
 	
 	private void initComponent() {
 		initLayout();
-		initDataListAndColumnList(null);
+		initDataListAndColumnList();
 		initResultTable();
 		initColumnViewPane();
 		initFooterPane();
@@ -116,7 +120,7 @@ public class ResultTab extends Tab implements UITab {
 		navInfoLabel.setStyle("-fx-padding: 2px 5px;");
 	}
 	
-	private void initDataListAndColumnList(BasicDBObject query) {
+	private void initDataListAndColumnList() {
 		try {
 			dataList = FXCollections.observableArrayList();
 			columns = new ArrayList<String>();
@@ -124,8 +128,8 @@ public class ResultTab extends Tab implements UITab {
 			
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gson = gsonBuilder.serializeNulls().create();
-			DB database = mongo.getDB(databaseName);
-			DBCollection collection = database.getCollection(collectionName);
+			database = mongo.getDB(databaseName);
+			collection = database.getCollection(collectionName);
 			
 			resultSize = collection.find(query).skip(dataSkipValue).size();
 			resultSizeLabel.setText(resultSize + " Row(s)");
@@ -312,6 +316,7 @@ public class ResultTab extends Tab implements UITab {
 		Button refresh = new Button("Refresh", new ImageView(ImageUtil.TB_DB_REFRESH_16_16));
 		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(refresh);
+		refresh.setOnAction(new ToolbarRefreshButton_onClick());
 		
 		Button add = new Button("Add", new ImageView(ImageUtil.TB_DB_ADD_16_16));
 		add.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -320,26 +325,17 @@ public class ResultTab extends Tab implements UITab {
 		Button remove = new Button("Remove", new ImageView(ImageUtil.TB_DB_REMOVE_16_16));
 		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(remove);
+		remove.setOnAction(new ToolbarRemoveButton_onClick());
 		
 		Button filter = new Button("Filter", new ImageView(ImageUtil.TB_DB_FILTER_16_16));
 		filter.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(filter);
-		filter.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				filterDialog.showModalDialog();
-			}
-		});
+		filter.setOnAction(new ToolbarFilterButton_onClick());
 		
 		
 		Button document = new Button("Document", new ImageView(ImageUtil.TB_DB_DOC_16_16));
 		document.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(document);
-		document.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				ModalDialog dialog = ModalDialog.createMessageDialog("Warn Dialog", "Example Waringing Dialog!", ModalDialog.WARN);
-				dialog.showModalDialog();
-			}
-		});
 	}
 	
 	private void initFilterDialog() {
@@ -354,7 +350,6 @@ public class ResultTab extends Tab implements UITab {
 		grid.add(queryLabel, 0,0);
 		final TextField queryText = new TextField();
 		grid.add(queryText, 1,0,5,1);
-		
 		
 		//Sort
 		Label sortLabel = new Label(Language.get(LABEL_SORT) + ": ");
@@ -395,11 +390,10 @@ public class ResultTab extends Tab implements UITab {
 		filterButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				try {
-					BasicDBObject query = (BasicDBObject) JSON.parse(queryText.getText());
+					query = (BasicDBObject) JSON.parse(queryText.getText());
 					dataLimitValue = Integer.valueOf(limitText.getText());
 					dataSkipValue = Integer.valueOf(skipText.getText());
-					initDataListAndColumnList(query);
-					refreshTableView();
+					refreshData();
 					dialog.hideModalDialog();
 				}
 				catch (Exception e) {
@@ -410,15 +404,45 @@ public class ResultTab extends Tab implements UITab {
 		
 	}
 	
-	private String getFilterChar(String val) {
-		if(val == ">") return "$gt";
-		else if(val == "<") return "$lt";
-		else if(val == ">=") return "$gte";
-		else if(val == "<=") return "$lte";
-		else if(val == "exists") return "exists";
-		else return null;
+	//Refresh datalist
+	private void refreshData() {
+		initDataListAndColumnList();
+		refreshTableView();
 	}
 	
+	//Toolbar Remove Button On Click Action
+	private class ToolbarRemoveButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			final ModalDialog dialog = ModalDialog.createYesNoQuestionDialog(Language.get(DIALOG_TITTLE_REMOVE), 
+					Language.get(MESSAGE_ARE_YOU_SURE));
+			Button yesButton = new Button(Language.get(BUTTON_YES));
+			dialog.addNodeToFooter(yesButton);
+			yesButton.setOnAction(new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent arg0) {
+					DBObject document = tableView.getSelectionModel().getSelectedItem(); 
+					collection.remove(document);
+					refreshData();
+					logger.info("Removed: " + document.get("_id"));
+					dialog.hideModalDialog();
+					dialog.destroy();
+				}
+			});
+			dialog.showModalDialog();
+		}
+	}
+	
+	//Toolbar refresh button onclick action
+	private class ToolbarRefreshButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			refreshData();
+		}
+	}
+	
+	private class ToolbarFilterButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			filterDialog.showModalDialog();
+		}
+	}
 	
 	public void destroy() {
 		tableView.prefHeightProperty().unbind();
