@@ -7,18 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
-import com.droidpark.mongoui.util.LanguageConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -37,7 +34,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -49,14 +45,12 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.RowConstraints;
 import javafx.util.Callback;
 
 public class ResultTab extends Tab implements UITab {
@@ -88,6 +82,7 @@ public class ResultTab extends Tab implements UITab {
 	ModalDialog filterDialog = null;
 	
 	Label resultSizeLabel = new Label();
+	Label navInfoLabel = new Label();
 	
 	int resultSize = 0;
 	private Gson gson = null;
@@ -108,12 +103,17 @@ public class ResultTab extends Tab implements UITab {
 		initFooterPane();
 		initToolPane();
 		initFilterDialog();
+		initLabels();
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setTop(tabToolPane);
 		borderPane.setCenter(horizontalPane);
 		borderPane.setBottom(tabFooterPane);
 		setContent(borderPane);
+	}
+	
+	private void initLabels() {
+		navInfoLabel.setStyle("-fx-padding: 2px 5px;");
 	}
 	
 	private void initDataListAndColumnList(BasicDBObject query) {
@@ -127,9 +127,11 @@ public class ResultTab extends Tab implements UITab {
 			DB database = mongo.getDB(databaseName);
 			DBCollection collection = database.getCollection(collectionName);
 			
-			resultSize = collection.find(query).skip(dataSkipValue).limit(dataLimitValue).size();
+			resultSize = collection.find(query).skip(dataSkipValue).size();
 			resultSizeLabel.setText(resultSize + " Row(s)");
-			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").limit("+dataLimitValue+").size()");
+			int navInfoSize = resultSize < dataLimitValue ? resultSize : dataLimitValue;
+			navInfoLabel.setText(dataSkipValue + " - " + navInfoSize + " of " + resultSize);
+			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").size()");
 			
 			DBCursor cursor = collection.find(query).skip(dataSkipValue).limit(dataLimitValue);
 			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").limit("+dataLimitValue+")");
@@ -285,13 +287,14 @@ public class ResultTab extends Tab implements UITab {
 		resultInfoBox.setStyle("-fx-padding: 4px;");
 		
 		HBox resultNavBox = new HBox();
+		resultNavBox.setStyle("-fx-padding: 4px;");
 		footerBorder.setRight(resultNavBox);
 		Button prev = new Button("", new ImageView(ImageUtil.PREV_16_16));
 		prev.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		resultNavBox.getChildren().add(prev);
+				
 		
-		Label limit = new Label("20 of " + resultSize);
-		resultNavBox.getChildren().add(limit);
+		resultNavBox.getChildren().add(navInfoLabel);
 		
 		Button next = new Button("", new ImageView(ImageUtil.NEXT_16_16));
 		next.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -306,30 +309,41 @@ public class ResultTab extends Tab implements UITab {
 	}
 	
 	private void initToolButtons(HBox toolBox) {
-		Button refresh = new Button("Refresh", new ImageView(ImageUtil.DB_REFRESH_16_16));
+		Button refresh = new Button("Refresh", new ImageView(ImageUtil.TB_DB_REFRESH_16_16));
 		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(refresh);
 		
-		Button add = new Button("Add", new ImageView(ImageUtil.DB_ADD_16_16));
+		Button add = new Button("Add", new ImageView(ImageUtil.TB_DB_ADD_16_16));
 		add.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(add);
 		
-		Button remove = new Button("Remove", new ImageView(ImageUtil.DB_REMOVE_16_16));
+		Button remove = new Button("Remove", new ImageView(ImageUtil.TB_DB_REMOVE_16_16));
 		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(remove);
 		
-		Button filter = new Button("Filter", new ImageView(ImageUtil.DB_FILTER_16_16));
+		Button filter = new Button("Filter", new ImageView(ImageUtil.TB_DB_FILTER_16_16));
 		filter.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(filter);
 		filter.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
 				filterDialog.showModalDialog();
 			}
 		});
-		toolBox.getChildren().add(filter);
+		
+		
+		Button document = new Button("Document", new ImageView(ImageUtil.TB_DB_DOC_16_16));
+		document.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(document);
+		document.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				ModalDialog dialog = ModalDialog.createMessageDialog("Warn Dialog", "Example Waringing Dialog!", ModalDialog.WARN);
+				dialog.showModalDialog();
+			}
+		});
 	}
 	
 	private void initFilterDialog() {
-		filterDialog = new ModalDialog(Language.get(DIALOG_TITLE_FILTER), 400, 150, ImageUtil.DATABASE_24_24);
+		filterDialog = new ModalDialog(Language.get(DIALOG_TITLE_FILTER), 400, 150, ImageUtil.MD_DB_FILTER_24_24);
 		final ModalDialog dialog = filterDialog;
 		
 		final GridPane grid = new GridPane();

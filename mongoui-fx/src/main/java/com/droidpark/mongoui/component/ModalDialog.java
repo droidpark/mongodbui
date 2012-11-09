@@ -1,10 +1,13 @@
 package com.droidpark.mongoui.component;
 
 
+import static com.droidpark.mongoui.util.LanguageConstants.BUTTON_OK;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -14,10 +17,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
+import com.droidpark.mongoui.util.ImageUtil;
+import com.droidpark.mongoui.util.Language;
 import com.droidpark.mongoui.util.Util;
 
 public class ModalDialog {
 
+	public static final int OK = 0;
+	public static final int WARN = 1;
+	public static final int ERROR = 2;
+	public static final int QUESTION = 3;
+	
 	private AnchorPane shadowPane;
 	private AnchorPane main;
 	private AnchorPane pane;
@@ -73,10 +83,15 @@ public class ModalDialog {
 		main = new AnchorPane();
 		main.getStyleClass().add("-mongoui-modal");
 		main.setPrefSize(width, height);
-		main.setLayoutX((pane.getPrefWidth() / 2) - (width / 2));
-		main.setLayoutY((pane.getPrefHeight() / 2) - (height / 2));
 		main.setStyle("-fx-background-color: #f1f1f1");
 		pane.getChildren().add(main);
+		
+		initLocation();
+	}
+	
+	private void initLocation() {
+		main.setLayoutX((pane.getPrefWidth() / 2) - (width / 2));
+		main.setLayoutY((pane.getPrefHeight() / 2) - (height / 2));
 	}
 
 	private void initBorderPane() {
@@ -158,6 +173,7 @@ public class ModalDialog {
 		Platform.runLater(new Runnable() {
 			public void run() {
 				Util.MAIN_FRAME.getChildren().add(pane);
+				initLocation();
 				pane.setVisible(true);
 			}
 		});
@@ -170,6 +186,32 @@ public class ModalDialog {
 				pane.setVisible(false);
 			}
 		});
+	}
+	
+	public static ModalDialog createMessageDialog(String title, String message, int severity) {
+		final ModalDialog dialog = new ModalDialog(title, 350, 150, getDialogIcon(severity));
+		Label label = new Label(message);
+		label.setStyle("-fx-padding: 10px;");
+		dialog.setContent(label);
+		Button okButton = new Button(Language.get(BUTTON_OK));
+		dialog.addNodeToFooter(okButton);
+		okButton.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent arg0) {
+				dialog.hideModalDialog();
+				dialog.destroy();
+			}
+		});
+		return dialog;
+	}
+	
+	private static Image getDialogIcon(int severity) {
+		switch (severity) {
+			case OK: return ImageUtil.MD_DB_OK_24_24;
+			case WARN: return ImageUtil.MD_DB_WARN_24_24;
+			case ERROR: return ImageUtil.MD_DB_ERROR_24_24;
+			case QUESTION: return ImageUtil.MD_DB_QUESTION_24_24;
+			default: return ImageUtil.MD_DB_DATABASE_24_24;
+		}
 	}
 	
 	public void destroy() {

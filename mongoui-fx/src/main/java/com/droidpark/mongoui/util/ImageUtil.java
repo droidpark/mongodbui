@@ -53,4 +53,20 @@ public class ImageUtil {
 	public static Image DB_REMOVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_remove_16_16.png"));
 	public static Image DB_FILTER_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_filter_16_16.png"));
 	public static Image DB_REFRESH_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "db_refresh_16_16.png"));
+	
+	public static Image TB_DB_ADD_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_add_16_16.png"));
+	public static Image TB_DB_DOC_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_doc_16_16.png"));
+	public static Image TB_DB_EDIT_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_edit_16_16.png"));
+	public static Image TB_DB_FILTER_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_filter_16_16.png"));
+	public static Image TB_DB_REFRESH_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_refresh_16_16.png"));
+	public static Image TB_DB_REMOVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_remove_16_16.png"));
+	public static Image TB_DB_SAVE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "tb_db_save_16_16.png"));
+	
+	public static Image MD_DB_FILTER_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_filter_24_24.png"));
+	public static Image MD_DB_DATABASE_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_database_24_24.png"));
+	public static Image MD_DB_ERROR_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_error_24_24.png"));
+	public static Image MD_DB_OK_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_ok_24_24.png"));
+	public static Image MD_DB_WARN_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_warn_24_24.png"));
+	public static Image MD_DB_QUESTION_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_question_24_24.png"));
+	
 }
