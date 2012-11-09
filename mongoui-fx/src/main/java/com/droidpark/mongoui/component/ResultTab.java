@@ -40,6 +40,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
@@ -203,7 +204,7 @@ public class ResultTab extends Tab implements UITab {
 			});
 			
 			tableView.getColumns().add(column);
-			tableView.getSelectionModel().setCellSelectionEnabled(true);
+			tableView.getSelectionModel().setCellSelectionEnabled(false);
 			tableView.setItems(dataList);
 		}
 	}
@@ -336,6 +337,7 @@ public class ResultTab extends Tab implements UITab {
 		Button document = new Button("Document", new ImageView(ImageUtil.TB_DB_DOC_16_16));
 		document.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(document);
+		document.setOnAction(new ToolbarDocumentButton_onClick());
 	}
 	
 	private void initFilterDialog() {
@@ -438,9 +440,32 @@ public class ResultTab extends Tab implements UITab {
 		}
 	}
 	
+	//Toolber filter button onclick action
 	private class ToolbarFilterButton_onClick implements EventHandler<ActionEvent> {
 		public void handle(ActionEvent arg0) {
 			filterDialog.showModalDialog();
+		}
+	}
+	
+	//Toolbar document button onclick action
+	private class ToolbarDocumentButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			final ModalDialog dialog = new ModalDialog(Language.get(DIALOG_TITTLE_RAW_DATA), 400, 200, 
+					ImageUtil.MD_DB_DOCUMENT_24_24);
+			TextArea textArea = new TextArea();
+			textArea.setPrefSize(395, 110);
+			DBObject object = tableView.getSelectionModel().getSelectedItem();
+			if(object != null) textArea.setText(object.toString());
+			dialog.setContent(textArea);
+			Button okButton = new Button(Language.get(BUTTON_OK));
+			dialog.addNodeToFooter(okButton);
+			okButton.setOnAction(new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent arg0) {
+					dialog.destroy();
+					dialog.hideModalDialog();
+				}
+			});
+			dialog.showModalDialog();
 		}
 	}
 	

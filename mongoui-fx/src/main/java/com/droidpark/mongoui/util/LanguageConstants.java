@@ -19,6 +19,7 @@ public final class LanguageConstants {
 	
 	public static final String DIALOG_TITLE_FILTER = "dialog.title.filter";
 	public static final String DIALOG_TITTLE_REMOVE = "dialog.title.remove_document";
+	public static final String DIALOG_TITTLE_RAW_DATA = "dialog.tittle.raw_data";
 	
 	public static final String MESSAGE_ARE_YOU_SURE = "message.are_you_sure";
 	

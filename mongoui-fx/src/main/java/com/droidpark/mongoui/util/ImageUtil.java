@@ -68,5 +68,6 @@ public class ImageUtil {
 	public static Image MD_DB_OK_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_ok_24_24.png"));
 	public static Image MD_DB_WARN_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_warn_24_24.png"));
 	public static Image MD_DB_QUESTION_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_question_24_24.png"));
+	public static Image MD_DB_DOCUMENT_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "md_db_document_24_24.png"));
 	
 }
