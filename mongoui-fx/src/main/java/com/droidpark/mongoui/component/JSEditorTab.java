@@ -51,17 +51,17 @@ public class JSEditorTab extends Tab implements UITab {
 	}
 	
 	private void initToolPaneButtons(HBox toolBox) {
-		Button save = new Button("Save", new ImageView(ImageUtil.SAVE2_16_16));
+		Button refresh = new Button("Refresh", new ImageView(ImageUtil.TB_DB_REFRESH_16_16));
+		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(refresh);
+		
+		Button save = new Button("Save", new ImageView(ImageUtil.TB_DB_SAVE_16_16));
 		save.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(save);
 		
-		Button remove = new Button("Remove", new ImageView(ImageUtil.REMOVE2_16_16));
+		Button remove = new Button("Remove", new ImageView(ImageUtil.TB_DB_REMOVE_16_16));
 		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(remove);
-		
-		Button refresh = new Button("Refresh", new ImageView(ImageUtil.REFRESH2_16_16));
-		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-		toolBox.getChildren().add(refresh);
 	}
 
 	public void destroy() {
