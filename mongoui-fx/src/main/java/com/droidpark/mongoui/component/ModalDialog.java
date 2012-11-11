@@ -16,6 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
@@ -28,19 +29,20 @@ public class ModalDialog {
 	public static final int ERROR = 2;
 	public static final int QUESTION = 3;
 	
-	private AnchorPane shadowPane;
-	private AnchorPane main;
-	private AnchorPane pane;
+	AnchorPane shadowPane;
+	AnchorPane main;
+	AnchorPane pane;
 	
 	BorderPane borderPane;
-	private HBox header;
-	private AnchorPane content;
-	private HBox footer;
+	AnchorPane headerWrap;
+	HBox header;
+	AnchorPane content;
+	HBox footer;
 	
-	private Image icon = null;
-	private String title;
-	private double width;
-	private double height;
+	Image icon = null;
+	String title;
+	double width;
+	double height;
 	
 	public ModalDialog(final String title, final double width, final double height) {
 		this.title = title;
@@ -102,10 +104,16 @@ public class ModalDialog {
 	}
 	
 	private void initHeader() {
+		headerWrap = new AnchorPane();
+		headerWrap.getStyleClass().add("-mongoui-modal-header");
+		AnchorPane pane = new AnchorPane();
+		headerWrap.getChildren().add(pane);
 		header = new HBox();
-		header.setPrefHeight(45);
-		header.getStyleClass().add("-mongoui-modal-header");
-		borderPane.setTop(header);
+		header.setStyle("-fx-padding: 10px;");
+		pane.setPrefHeight(45);
+		
+		pane.getChildren().add(header);
+		borderPane.setTop(headerWrap);
 		
 		if(icon != null) {
 			header.getChildren().add(new ImageView(icon));
@@ -118,36 +126,43 @@ public class ModalDialog {
 	}
 	
 	private void initFooter() {
+		AnchorPane wp = new AnchorPane();
+		wp.getStyleClass().add("-mongoui-modal-footer");
+		AnchorPane pane = new AnchorPane();
+		wp.getChildren().add(pane);
+		pane.setPrefHeight(35);
 		footer = new HBox();
-		footer.setPrefHeight(30);
-		footer.getStyleClass().add("-mongoui-modal-footer");
+		footer.setStyle("-fx-padding: 6px;");
 		footer.setAlignment(Pos.CENTER_RIGHT);
 		footer.setSpacing(5);
-		borderPane.setBottom(footer);
+		footer.prefWidthProperty().bind(wp.widthProperty());
+		pane.getChildren().add(footer);
+		borderPane.setBottom(wp);
 	}
 	
 	private void initContent() {
 		AnchorPane anchorPane = new AnchorPane();
+		anchorPane.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 		content = new AnchorPane();
 		content.getStyleClass().add("-mongoui-modal-content");
 		
 		content.prefHeightProperty().bind(anchorPane.heightProperty());
 		content.prefWidthProperty().bind(anchorPane.widthProperty());
-		
+		content.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
 		anchorPane.getChildren().add(content);
 		borderPane.setCenter(anchorPane);
 	}
 	
 	private void initHeaderDrag() {
 		final Delta delta = new Delta();
-		header.setOnMousePressed(new EventHandler<MouseEvent>() {
+		headerWrap.setOnMousePressed(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
 				delta.x = main.getLayoutX() - event.getScreenX();
 				delta.y = main.getLayoutY() - event.getScreenY();
 			}
 		});
 		
-		header.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		headerWrap.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
 				main.setLayoutX(event.getScreenX() + delta.x);
 				main.setLayoutY(event.getScreenY() + delta.y);
@@ -235,6 +250,7 @@ public class ModalDialog {
 		borderPane.prefWidthProperty().unbind();
 		content.prefHeightProperty().unbind();
 		content.prefWidthProperty().unbind();
+		footer.prefWidthProperty().unbind();
 	}
 	
 	public AnchorPane getContent() {

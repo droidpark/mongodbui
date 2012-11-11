@@ -60,16 +60,16 @@ import javafx.util.Callback;
 
 public class ResultTab extends Tab implements UITab {
 
-	private static Logger logger = Logger.getLogger(ResultTab.class);
-	private Integer dataLimitValue = 100;
-	private Integer dataSkipValue = 0;
+	static Logger logger = Logger.getLogger(ResultTab.class);
+	Integer dataLimitValue = 100;
+	Integer dataSkipValue = 0;
 	
-	private Mongo mongo;
-	private String collectionName;
-	private String databaseName;
+	Mongo mongo;
+	String collectionName;
+	String databaseName;
 	
-	private DB database = null; 
-	private DBCollection collection = null;
+	DB database = null; 
+	DBCollection collection = null;
 	Map<String, Column> columns;
 	TableView<DBObject> tableView = new TableView<DBObject>();
 	ObservableList<DBObject> dataList;
@@ -438,7 +438,7 @@ public class ResultTab extends Tab implements UITab {
 		}
 	}
 	
-	private class Column {
+	public class Column {
 		private String name;
 		private Class clazz;
 		Column(String name, Class clazz) {
@@ -490,6 +490,14 @@ public class ResultTab extends Tab implements UITab {
 
 	public void setQuery(BasicDBObject query) {
 		this.query = query;
+	}
+
+	public Map<String, Column> getColumns() {
+		return columns;
+	}
+
+	public AnchorPane getColumnAncWrapPane() {
+		return columnAncWrapPane;
 	}
 	
 }
