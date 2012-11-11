@@ -31,7 +31,6 @@ public class ModalDialog {
 	private AnchorPane shadowPane;
 	private AnchorPane main;
 	private AnchorPane pane;
-	ScrollPane scrollPane;
 	
 	BorderPane borderPane;
 	private HBox header;
@@ -129,17 +128,13 @@ public class ModalDialog {
 	
 	private void initContent() {
 		AnchorPane anchorPane = new AnchorPane();
-		
 		content = new AnchorPane();
 		content.getStyleClass().add("-mongoui-modal-content");
 		
-		scrollPane = new ScrollPane();
-		scrollPane.getStyleClass().add("-mongoui-modal-scrollpane");
-		scrollPane.setContent(content);
-		scrollPane.prefHeightProperty().bind(anchorPane.heightProperty());
-		scrollPane.prefWidthProperty().bind(anchorPane.widthProperty());
+		content.prefHeightProperty().bind(anchorPane.heightProperty());
+		content.prefWidthProperty().bind(anchorPane.widthProperty());
 		
-		anchorPane.getChildren().add(scrollPane);
+		anchorPane.getChildren().add(content);
 		borderPane.setCenter(anchorPane);
 	}
 	
@@ -238,8 +233,12 @@ public class ModalDialog {
 		shadowPane.prefHeightProperty().unbind();
 		borderPane.prefHeightProperty().unbind();
 		borderPane.prefWidthProperty().unbind();
-		scrollPane.prefHeightProperty().unbind();
-		scrollPane.prefWidthProperty().unbind();
+		content.prefHeightProperty().unbind();
+		content.prefWidthProperty().unbind();
+	}
+	
+	public AnchorPane getContent() {
+		return this.content;
 	}
 	
 	class Delta {double x, y;}

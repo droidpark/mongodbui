@@ -11,6 +11,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
+import com.droidpark.mongoui.dialog.DataResultFilterDialog;
+import com.droidpark.mongoui.dialog.DocumentRawDataViewDialog;
+import com.droidpark.mongoui.dialog.EditDocumentDialog;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
 import com.google.gson.Gson;
@@ -83,7 +86,7 @@ public class ResultTab extends Tab implements UITab {
 	TitledPane columnTitledPane;
 	BorderPane footerBorder;
 	
-	ModalDialog filterDialog = null;
+	DataResultFilterDialog filterDialog = null;
 	
 	Label resultSizeLabel = new Label();
 	Label navInfoLabel = new Label();
@@ -92,6 +95,8 @@ public class ResultTab extends Tab implements UITab {
 	private Gson gson = null;
 	
 	BasicDBObject query = null;
+	
+	final ResultTab instance = this;
 	
 	public ResultTab(String collection, String database, Mongo mongo) {
 		super(database + "." + collection);
@@ -329,11 +334,13 @@ public class ResultTab extends Tab implements UITab {
 		//toolbar add button
 		Button add = new Button("Add", new ImageView(ImageUtil.TB_DB_ADD_16_16));
 		add.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		add.setOnAction(new ToolbarAddButtn_onClick());
 		toolBox.getChildren().add(add);
 		
 		//toolbar edit button
 		Button edit = new Button("Edit", new ImageView(ImageUtil.TB_DB_EDIT_16_16));
 		edit.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		edit.setOnAction(new ToolbarEditButton_onClick());
 		toolBox.getChildren().add(edit);
 		
 		//toolbar remove button
@@ -357,75 +364,32 @@ public class ResultTab extends Tab implements UITab {
 	
 	//init filter dialog
 	private void initFilterDialog() {
-		filterDialog = new ModalDialog(Language.get(DIALOG_TITLE_FILTER), 400, 150, ImageUtil.MD_DB_FILTER_24_24);
-		final ModalDialog dialog = filterDialog;
-		
-		final GridPane grid = new GridPane();
-		grid.setStyle("-fx-padding: 10px;");
-		//query
-		Label queryLabel = new Label(Language.get(LABEL_QUERY) + ": ");
-		queryLabel.setStyle("-fx-padding: 0px 10px 0px 0px;");
-		grid.add(queryLabel, 0,0);
-		final TextField queryText = new TextField();
-		grid.add(queryText, 1,0,5,1);
-		
-		//Sort
-		Label sortLabel = new Label(Language.get(LABEL_SORT) + ": ");
-		sortLabel.setStyle("-fx-padding: 0px 10px 0px 0px;");
-		grid.add(sortLabel,0,1);
-		final TextField sortText = new TextField();
-		sortText.setPrefWidth(100);
-		grid.add(sortText, 1,1);
-		
-		//Skip
-		Label skipLabel = new Label(Language.get(LABEL_SKIP) + ": ");
-		skipLabel.setStyle("-fx-padding: 0px 10px 0px 20px;");
-		grid.add(skipLabel, 2, 1);
-		final TextField skipText = new TextField(dataSkipValue.toString());
-		skipText.setPrefWidth(50);
-		grid.add(skipText, 3, 1);
-		
-		//Limit
-		Label limitLabel = new Label(Language.get(LABEL_LIMIT) + ": ");
-		limitLabel.setStyle("-fx-padding: 0px 10px 0px 20px;");
-		grid.add(limitLabel, 4, 1);
-		final TextField limitText = new TextField(dataLimitValue.toString());
-		limitText.setPrefWidth(50);
-		grid.add(limitText, 5, 1);
-		
-		dialog.setContent(grid);
-		
-		Button cancelButton = new Button(Language.get(BUTTON_CANCEL));
-		dialog.addNodeToFooter(cancelButton);
-		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				dialog.hideModalDialog();
-			}
-		});
-		
-		Button filterButton = new Button(Language.get(BUTTON_FILTER));
-		dialog.addNodeToFooter(filterButton);
-		filterButton.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				try {
-					query = (BasicDBObject) JSON.parse(queryText.getText());
-					dataLimitValue = Integer.valueOf(limitText.getText());
-					dataSkipValue = Integer.valueOf(skipText.getText());
-					refreshData();
-					dialog.hideModalDialog();
-				}
-				catch (Exception e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		});
-		
+		filterDialog = new DataResultFilterDialog(this); 
 	}
 	
 	//Refresh datalist
-	private void refreshData() {
+	public void refreshData() {
 		initDataListAndColumnList();
 		refreshTableView();
+	}
+	
+	//Toolbar Add Document On Click Action
+	private class ToolbarAddButtn_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			EditDocumentDialog dialog = new EditDocumentDialog(instance);
+			dialog.showModalDialog();
+		}
+	}
+	
+	//Toolbar Edit Document On Click Action
+	private class ToolbarEditButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			DBObject object = tableView.getSelectionModel().getSelectedItem();
+			if(object != null) {
+				EditDocumentDialog dialog = new EditDocumentDialog(object, instance);
+				dialog.showModalDialog();
+			}
+		}
 	}
 	
 	//Toolbar Remove Button On Click Action
@@ -466,29 +430,17 @@ public class ResultTab extends Tab implements UITab {
 	//Toolbar document button onclick action
 	private class ToolbarDocumentButton_onClick implements EventHandler<ActionEvent> {
 		public void handle(ActionEvent arg0) {
-			final ModalDialog dialog = new ModalDialog(Language.get(DIALOG_TITTLE_RAW_DATA), 400, 200, 
-					ImageUtil.MD_DB_DOCUMENT_24_24);
-			TextArea textArea = new TextArea();
-			textArea.setPrefSize(395, 110);
-			DBObject object = tableView.getSelectionModel().getSelectedItem();
-			if(object != null) textArea.setText(object.toString());
-			dialog.setContent(textArea);
-			Button okButton = new Button(Language.get(BUTTON_OK));
-			dialog.addNodeToFooter(okButton);
-			okButton.setOnAction(new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent arg0) {
-					dialog.destroy();
-					dialog.hideModalDialog();
-				}
-			});
-			dialog.showModalDialog();
+			DBObject document = tableView.getSelectionModel().getSelectedItem();
+			if(document != null) {
+				DocumentRawDataViewDialog dialog = new DocumentRawDataViewDialog(document, instance);
+				dialog.showModalDialog();
+			}
 		}
 	}
 	
 	private class Column {
 		private String name;
 		private Class clazz;
-		Column() {}
 		Column(String name, Class clazz) {
 			this.name = name;
 			this.clazz = clazz;
@@ -514,6 +466,30 @@ public class ResultTab extends Tab implements UITab {
 		columnTreePane.getRoot().getChildren().clear();
 		columnTreePane.setRoot(new TreeItem<CheckBox>());
 		filterDialog.destroy();
+	}
+
+	public Integer getDataLimitValue() {
+		return dataLimitValue;
+	}
+
+	public void setDataLimitValue(Integer dataLimitValue) {
+		this.dataLimitValue = dataLimitValue;
+	}
+
+	public Integer getDataSkipValue() {
+		return dataSkipValue;
+	}
+
+	public void setDataSkipValue(Integer dataSkipValue) {
+		this.dataSkipValue = dataSkipValue;
+	}
+
+	public BasicDBObject getQuery() {
+		return query;
+	}
+
+	public void setQuery(BasicDBObject query) {
+		this.query = query;
 	}
 	
 }

@@ -16,10 +16,14 @@ public final class LanguageConstants {
 	public static final String BUTTON_FILTER = "button.filter";
 	public static final String BUTTON_NO = "button.no";
 	public static final String BUTTON_YES = "button.yes";
+	public static final String BUTTON_UPDATE = "button.update";
+	public static final String BUTTON_SAVE = "button.save";
 	
 	public static final String DIALOG_TITLE_FILTER = "dialog.title.filter";
 	public static final String DIALOG_TITTLE_REMOVE = "dialog.title.remove_document";
-	public static final String DIALOG_TITTLE_RAW_DATA = "dialog.tittle.raw_data";
+	public static final String DIALOG_TITLE_RAW_DATA = "dialog.title.raw_data";
+	public static final String DIALOG_TITLE_EDIT_DOCUMENT = "dialog.title.edit_document";
+	public static final String DIALOG_TITLE_ADD_DOCUMENT = "dialog.title.add_document";
 	
 	public static final String MESSAGE_ARE_YOU_SURE = "message.are_you_sure";
 	
