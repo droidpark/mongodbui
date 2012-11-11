@@ -1,10 +1,11 @@
 package com.droidpark.mongoui.component;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -66,7 +67,7 @@ public class ResultTab extends Tab implements UITab {
 	
 	private DB database = null; 
 	private DBCollection collection = null;
-	List<String> columns;
+	Map<String, Column> columns;
 	TableView<DBObject> tableView = new TableView<DBObject>();
 	ObservableList<DBObject> dataList;
 	
@@ -124,7 +125,7 @@ public class ResultTab extends Tab implements UITab {
 	private void initDataListAndColumnList() {
 		try {
 			dataList = FXCollections.observableArrayList();
-			columns = new ArrayList<String>();
+			columns = new HashMap<String, ResultTab.Column>();
 			query = query == null ? new BasicDBObject() : query;
 			
 			GsonBuilder gsonBuilder = new GsonBuilder();
@@ -141,18 +142,21 @@ public class ResultTab extends Tab implements UITab {
 			DBCursor cursor = collection.find(query).skip(dataSkipValue).limit(dataLimitValue);
 			logger.info("db." + collectionName + ".find("+query.toString()+").skip("+dataSkipValue+").limit("+dataLimitValue+")");
 			
-			Set<String> columnsSet = new HashSet<String>();
+			//init column list
+			Map<String, Column> columnsMap = new HashMap<String, ResultTab.Column>();
 			while(cursor.hasNext()) {
 				DBObject object = cursor.next();
 				object.isPartialObject();
 				dataList.add(object);
-				for(String column : object.keySet()) {
-					columnsSet.add(column);
+				for(String columnStr : object.keySet()) {
+					Object cobject = (Object) object.get(columnStr);
+					Class clazz = cobject != null ? cobject.getClass() : null;
+					Column column = new Column(columnStr, clazz);
+					columnsMap.put(columnStr, column);
 				}
 				
 			}
-			columns.addAll(columnsSet);
-			Collections.sort(columns);
+			columns.putAll(columnsMap);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -174,7 +178,7 @@ public class ResultTab extends Tab implements UITab {
 	
 	private void refreshTableView() {
 		clearTableViewData();
-		for(final String columnName : columns) {
+		for(final String columnName : columns.keySet()) {
 			TableColumn<DBObject, String> column = new TableColumn<DBObject, String>();
 			column.setText(columnName);
 			column.setMinWidth(100);
@@ -234,10 +238,12 @@ public class ResultTab extends Tab implements UITab {
 		rootField.getValue().setDisable(true);
 		rootField.getValue().setSelected(true);
 		final TableView<DBObject> table = tableView;
-		for(final String column : columns) {
+		for(final String columnName : columns.keySet()) {
+			final Column column = columns.get(columnName);
 			final TreeItem<CheckBox> check = new TreeItem<CheckBox>();
 			check.setValue(new CheckBox());
-			check.getValue().setText(column);
+			String type = column.clazz != null ? column.clazz.getSimpleName() : "Unkown";
+			check.getValue().setText(column.name + " [" + type +"]");
 			check.getValue().setSelected(true);
 			check.getValue().setOnAction(new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent arg0) {
@@ -245,7 +251,7 @@ public class ResultTab extends Tab implements UITab {
 					for(TableColumn column : table.getColumns()) {
 						tempcolumn.add(column.getText());
 					}
-					int index = tempcolumn.indexOf(column);
+					int index = tempcolumn.indexOf(column.name);
 					tempcolumn.clear();
 					table.getColumns().get(index).setVisible(check.getValue().isSelected());
 				}
@@ -297,8 +303,6 @@ public class ResultTab extends Tab implements UITab {
 		Button prev = new Button("", new ImageView(ImageUtil.PREV_16_16));
 		prev.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		resultNavBox.getChildren().add(prev);
-				
-		
 		resultNavBox.getChildren().add(navInfoLabel);
 		
 		Button next = new Button("", new ImageView(ImageUtil.NEXT_16_16));
@@ -306,6 +310,7 @@ public class ResultTab extends Tab implements UITab {
 		resultNavBox.getChildren().add(next);
 	}
 	
+	//init toolbar
 	private void initToolPane() {
 		HBox toolBox = new HBox();
 		toolBox.setStyle("-fx-padding: 4px;");
@@ -313,33 +318,44 @@ public class ResultTab extends Tab implements UITab {
 		initToolButtons(toolBox);
 	}
 	
+	//init toolbar buttons
 	private void initToolButtons(HBox toolBox) {
+		//toolbar refresh button
 		Button refresh = new Button("Refresh", new ImageView(ImageUtil.TB_DB_REFRESH_16_16));
 		refresh.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(refresh);
 		refresh.setOnAction(new ToolbarRefreshButton_onClick());
 		
+		//toolbar add button
 		Button add = new Button("Add", new ImageView(ImageUtil.TB_DB_ADD_16_16));
 		add.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(add);
 		
+		//toolbar edit button
+		Button edit = new Button("Edit", new ImageView(ImageUtil.TB_DB_EDIT_16_16));
+		edit.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		toolBox.getChildren().add(edit);
+		
+		//toolbar remove button
 		Button remove = new Button("Remove", new ImageView(ImageUtil.TB_DB_REMOVE_16_16));
 		remove.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(remove);
 		remove.setOnAction(new ToolbarRemoveButton_onClick());
 		
+		//toolbar filter button
 		Button filter = new Button("Filter", new ImageView(ImageUtil.TB_DB_FILTER_16_16));
 		filter.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(filter);
 		filter.setOnAction(new ToolbarFilterButton_onClick());
 		
-		
+		//toolber document button
 		Button document = new Button("Document", new ImageView(ImageUtil.TB_DB_DOC_16_16));
 		document.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		toolBox.getChildren().add(document);
 		document.setOnAction(new ToolbarDocumentButton_onClick());
 	}
 	
+	//init filter dialog
 	private void initFilterDialog() {
 		filterDialog = new ModalDialog(Language.get(DIALOG_TITLE_FILTER), 400, 150, ImageUtil.MD_DB_FILTER_24_24);
 		final ModalDialog dialog = filterDialog;
@@ -466,6 +482,16 @@ public class ResultTab extends Tab implements UITab {
 				}
 			});
 			dialog.showModalDialog();
+		}
+	}
+	
+	private class Column {
+		private String name;
+		private Class clazz;
+		Column() {}
+		Column(String name, Class clazz) {
+			this.name = name;
+			this.clazz = clazz;
 		}
 	}
 	
