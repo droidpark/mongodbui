@@ -37,6 +37,7 @@ public class ModalDialog {
 	AnchorPane headerWrap;
 	HBox header;
 	AnchorPane content;
+	AnchorPane footerWrap;
 	HBox footer;
 	
 	Image icon = null;
@@ -126,18 +127,19 @@ public class ModalDialog {
 	}
 	
 	private void initFooter() {
-		AnchorPane wp = new AnchorPane();
-		wp.getStyleClass().add("-mongoui-modal-footer");
+		footerWrap = new AnchorPane();
+		footerWrap.getStyleClass().add("-mongoui-modal-footer");
 		AnchorPane pane = new AnchorPane();
-		wp.getChildren().add(pane);
+		footerWrap.getChildren().add(pane);
 		pane.setPrefHeight(35);
 		footer = new HBox();
 		footer.setStyle("-fx-padding: 6px;");
 		footer.setAlignment(Pos.CENTER_RIGHT);
 		footer.setSpacing(5);
-		footer.prefWidthProperty().bind(wp.widthProperty());
+		footer.prefWidthProperty().bind(footerWrap.widthProperty());
 		pane.getChildren().add(footer);
-		borderPane.setBottom(wp);
+		borderPane.setBottom(footerWrap);
+		initResizeEvent();
 	}
 	
 	private void initContent() {
@@ -166,6 +168,28 @@ public class ModalDialog {
 			public void handle(MouseEvent event) {
 				main.setLayoutX(event.getScreenX() + delta.x);
 				main.setLayoutY(event.getScreenY() + delta.y);
+			}
+		});
+	}
+	
+	private void initResizeEvent() {
+		final Delta delta = new Delta();
+		final Delta size = new Delta();
+		footerWrap.setOnMousePressed(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent event) {
+				delta.x = event.getScreenX();
+				delta.y = event.getScreenY();
+				size.x = main.getWidth();
+				size.y = main.getHeight();
+			}
+		});
+		footerWrap.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent event) {
+				double w = size.x + (event.getScreenX() - delta.x);
+				double h = size.y + (event.getScreenY() - delta.y);
+				if(h < height) h = height;
+				if(w < width) w = width;
+				main.setPrefSize(w, h);
 			}
 		});
 	}
