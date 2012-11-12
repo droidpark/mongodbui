@@ -17,7 +17,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
@@ -28,6 +30,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -73,7 +76,7 @@ public class MainForm extends Application {
 	private AnchorPane centerPane;
 	private TabPane tabPane;
 	private TextArea consoleTextArea = new TextArea();
-	
+	TreeView<String> treeView;
 	MainForm instance;
 	
 	private final ProgressBar progressBar = new ProgressBar();
@@ -343,30 +346,39 @@ public class MainForm extends Application {
 			
 			//Database TreeView
 			databasePane.getChildren().clear();
-			final TreeView<String> treeView = new TreeView<String>(root);
+			treeView = new TreeView<String>(root);
 			treeView.prefHeightProperty().bind(databasePane.heightProperty());
 			treeView.prefWidthProperty().bind(databasePane.widthProperty());
+			treeView.setOnMouseClicked(new DatabaseTreeView_OnClick());
 			databasePane.getChildren().add(treeView);
 			
 			
-			// Add New Result Tab For onClick Collection Item
-			treeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-				public void handle(MouseEvent event) {
-					TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
-					if(item == null) {return;}
-					if(item.getParent() != null) {
-						DBTreeEnum treeEnum = DBTreeEnum.find(item.getParent().getValue());
-						switch (treeEnum) {
-							case COLLECTION: onClickCollectionItem(item); break;
-							case JAVASCRIPT: onClickJavaScriptItem(item); break;
-						}
-					}
-				}
-			});
 		} 
 		catch (Exception e) {
 			databasePane.getChildren().clear();
 			logger.debug(e.getMessage(), e);
+		}
+	}
+	
+	//Database TreeView on click actions
+	private class DatabaseTreeView_OnClick implements EventHandler<MouseEvent> {
+		public void handle(MouseEvent event) {
+			if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() >= 2) {
+				databaseTreeViewOnDoubleClick();
+			}
+		}
+	}
+	
+	//Database TreeView onDouble Click
+	private void databaseTreeViewOnDoubleClick() {
+		TreeItem<String> item = treeView.getSelectionModel().getSelectedItem();
+		if(item == null) {return;}
+		if(item.getParent() != null) {
+			DBTreeEnum treeEnum = DBTreeEnum.find(item.getParent().getValue());
+			switch (treeEnum) {
+				case COLLECTION: onClickCollectionItem(item); break;
+				case JAVASCRIPT: onClickJavaScriptItem(item); break;
+			}
 		}
 	}
 	
@@ -386,6 +398,7 @@ public class MainForm extends Application {
 		tabThread.start();
 	}
 	
+	//Database Tree onClick Javascript Items
 	private void onClickJavaScriptItem(TreeItem<String> item) {
 		String database = item.getParent().getParent().getValue();
 		String stored = item.getValue();
