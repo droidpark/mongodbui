@@ -199,6 +199,7 @@ public class ResultTab extends Tab implements UITab {
 						}
 						else if(entity.isJsonPrimitive()) {
 							value = entity.getAsString();
+							value = value.length() > 100 ? value.substring(0, 100) + "..." : value;
 						}
 						else if(entity.isJsonObject()) {
 							value = "{" + entity.getAsJsonObject().entrySet().size() + " fields}";
@@ -498,6 +499,10 @@ public class ResultTab extends Tab implements UITab {
 
 	public AnchorPane getColumnAncWrapPane() {
 		return columnAncWrapPane;
+	}
+
+	public DBCollection getCollection() {
+		return collection;
 	}
 	
 }

@@ -1,7 +1,5 @@
 package com.droidpark.mongoui.dialog;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -15,7 +13,10 @@ import com.droidpark.mongoui.component.ModalDialog;
 import com.droidpark.mongoui.component.ResultTab;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
+import com.mongodb.util.JSON;
 
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
@@ -73,20 +74,36 @@ public class EditDocumentDialog extends ModalDialog {
 	//Update button onclick action
 	private class UpdateButton_OnClick implements EventHandler<ActionEvent> {
 		public void handle(ActionEvent arg0) {
-			logger.info("Updating document");
-			resultTab.refreshData();
-			hideModalDialog();
-			destroy();
+			try {
+				DBCollection collection = resultTab.getCollection();
+				DBObject update = (DBObject)JSON.parse(textArea.getText());
+				WriteResult reulst = collection.update(document, update);
+				logger.info("Document Updated: " + document + " to " + update);
+				resultTab.refreshData();
+				hideModalDialog();
+				destroy();
+			}
+			catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 	}
 	
 	//Save button onclick action
 	private class SaveButton_OnClick implements EventHandler<ActionEvent> {
 		public void handle(ActionEvent arg0) {
-			logger.info("Saving document");
-			resultTab.refreshData();
-			hideModalDialog();
-			destroy();
+			try {
+				DBCollection collection = resultTab.getCollection();
+				DBObject object = (DBObject) JSON.parse(textArea.getText());
+				WriteResult result = collection.save(object);
+				logger.info("Document saved: " + object.toString());
+				resultTab.refreshData();
+				hideModalDialog();
+				destroy();
+			}
+			catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
 		}
 	}
 	
