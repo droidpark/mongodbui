@@ -40,6 +40,7 @@ import javafx.stage.Stage;
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
 import com.droidpark.mongoui.component.ModalDialog;
+import com.droidpark.mongoui.dialog.ManageCollectionDialog;
 import com.droidpark.mongoui.task.AddTabTask;
 import com.droidpark.mongoui.task.CreateJSEditorTab;
 import com.droidpark.mongoui.task.CreateResultTabTask;
@@ -48,6 +49,7 @@ import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
 import com.droidpark.mongoui.util.LanguageConstants;
 import com.droidpark.mongoui.util.Log4jTextAreaAppender;
+import com.droidpark.mongoui.util.MongoUtil;
 import com.droidpark.mongoui.util.Util;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -72,13 +74,14 @@ public class MainForm extends Application {
 	private TabPane tabPane;
 	private TextArea consoleTextArea = new TextArea();
 	
-	private final ProgressBar progressBar = new ProgressBar();
+	MainForm instance;
 	
-	private Mongo mongo;
+	private final ProgressBar progressBar = new ProgressBar();
 	
 	@Override
 	public void start(Stage primary) throws Exception {
 		Log4jTextAreaAppender.initTextArea(consoleTextArea);
+		instance = this;
 		stage = primary;
 		initComponent();
 		stage.show();
@@ -242,6 +245,7 @@ public class MainForm extends Application {
 		//Add Collection
 		Button addCollectionButton = new Button(Language.get(MAIN_MENU_COLLECTION), new ImageView(ImageUtil.COLLECTION_24_24));
 		addCollectionButton.setContentDisplay(ContentDisplay.TOP);
+		addCollectionButton.setOnAction(new MainToolbarCollectionButton_OnClick());
 		toolBar.getItems().add(addCollectionButton);
 		
 		//Add Index
@@ -271,16 +275,23 @@ public class MainForm extends Application {
 		toolBar.getItems().add(settingsButton);
 	}
 	
+	//MainToolbar Collection button on click
+	private class MainToolbarCollectionButton_OnClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			ManageCollectionDialog dialog = new ManageCollectionDialog(instance);
+			dialog.showModalDialog();
+		}
+	}
+	
 	
 	/**
 	 * Database Connection after Database Tree Init.
 	 */
-	private void initDatabaseTree(String host, int port) {
+	private void initDatabaseTree() {
 		try {
-			mongo = new Mongo(host, port);
-			List<String> databaseList = new ArrayList<String>(mongo.getDatabaseNames());
+			List<String> databaseList = new ArrayList<String>(MongoUtil.getConnection().getDatabaseNames());
 			//Root Node
-			TreeItem<String> root = new TreeItem<String>(host, new ImageView(ImageUtil.NEXT_NODE_16_16));
+			TreeItem<String> root = new TreeItem<String>(MongoUtil.getHost(), new ImageView(ImageUtil.NEXT_NODE_16_16));
 			root.setExpanded(true);
 			//Database Nodes
 			for(String dbname : databaseList) {
@@ -291,7 +302,7 @@ public class MainForm extends Application {
 				main.getChildren().add(collectionItem);
 				
 				//Add Collections
-				DB database = mongo.getDB(dbname);
+				DB database = MongoUtil.getConnection().getDB(dbname);
 				Set<String> collectionList = new HashSet<String>(database.getCollectionNames());
 				for(String collectionName: collectionList) {
 					
@@ -352,14 +363,7 @@ public class MainForm extends Application {
 					}
 				}
 			});
-			
-			logger.info("Successfully connected to " + host + ".");
-		}
-		catch (UnknownHostException e) {
-			databasePane.getChildren().clear();
-			logger.warn("Unknown Host: " + e.getMessage());
-			logger.debug(e.getMessage(),e);
-		}
+		} 
 		catch (Exception e) {
 			databasePane.getChildren().clear();
 			logger.debug(e.getMessage(), e);
@@ -371,7 +375,7 @@ public class MainForm extends Application {
 		String database = item.getParent().getParent().getValue();
 		String collection = item.getValue();
 		//Create new result Tab task
-		CreateResultTabTask task = new CreateResultTabTask(collection, database, mongo);
+		CreateResultTabTask task = new CreateResultTabTask(collection, database, MongoUtil.getConnection());
 		progressBar.progressProperty().bind(task.progressProperty());
 		Thread taskThread = new Thread(task);
 		taskThread.start();
@@ -386,7 +390,7 @@ public class MainForm extends Application {
 		String database = item.getParent().getParent().getValue();
 		String stored = item.getValue();
 		
-		CreateJSEditorTab task = new CreateJSEditorTab(stored, database, mongo);
+		CreateJSEditorTab task = new CreateJSEditorTab(stored, database, MongoUtil.getConnection());
 		progressBar.progressProperty().bind(task.progressProperty());
 		Thread taskThread = new Thread(task);
 		taskThread.start();
@@ -439,12 +443,18 @@ public class MainForm extends Application {
 		Button connectButton = new Button("Connect");
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
+				MongoUtil.setHost(hostField.getText());
+				MongoUtil.setPort(Integer.valueOf(portField.getText()));
+				MongoUtil.initConnection();
+				refreshDatabaseTreeView();
 				dialog.hideModalDialog();
-				tabPane.getTabs().clear();
-				initDatabaseTree(hostField.getText(), Integer.valueOf(portField.getText()));
 			}
 		});
 		dialog.addNodeToFooter(connectButton);
 		dialog.showModalDialog();
+	}
+	
+	public void refreshDatabaseTreeView() {
+		initDatabaseTree();
 	}
 }
