@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -44,6 +45,7 @@ public class ModalDialog {
 	String title;
 	double width;
 	double height;
+	boolean fullScreen = false;
 	
 	public ModalDialog(final String title, final double width, final double height) {
 		this.title = title;
@@ -124,6 +126,7 @@ public class ModalDialog {
 		label.getStyleClass().add("-mongoui-modal-header-label");
 		header.getChildren().add(label);
 		initHeaderDrag();
+		initFullScreenSupport();
 	}
 	
 	private void initFooter() {
@@ -190,6 +193,27 @@ public class ModalDialog {
 				if(h < height) h = height;
 				if(w < width) w = width;
 				main.setPrefSize(w, h);
+			}
+		});
+	}
+	
+	private void initFullScreenSupport() {
+		headerWrap.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent event) {
+				if(event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() >= 2) {
+					if(!fullScreen) {
+						main.setLayoutX(25);
+						main.setLayoutY(25);
+						main.setPrefWidth(Util.MAIN_FRAME.getWidth() - 50);
+						main.setPrefHeight(Util.MAIN_FRAME.getHeight() - 50);
+						fullScreen = true;
+					}
+					else {
+						fullScreen = false;
+						main.setPrefSize(width, height);
+						initLocation();
+					}
+				}
 			}
 		});
 	}

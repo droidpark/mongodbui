@@ -15,25 +15,18 @@ public class MongoUtil {
 	private static String host;
 	private static int port;
 	
-	public static void initConnection(){ 
+	public static void initConnection() throws Exception{ 
 		connect();
 	}
 	
-	public static void initConnection(String host, int port){
+	public static void initConnection(String host, int port) throws Exception{
 		MongoUtil.host = host;
 		MongoUtil.port = port;
 		connect();
 	}
 	
-	private static void connect(){
-		try {
-			connection = new Mongo(host, port);
-			logger.info("Successfully connected to " + host + ".");
-		} catch (UnknownHostException e) {
-			logger.error(e.getMessage(),e);
-		} catch (MongoException e) {
-			logger.error(e.getMessage(),e);
-		}
+	private static void connect() throws Exception {
+		connection = new Mongo(host, port);
 	}
 	
 	public static Mongo getConnection() {

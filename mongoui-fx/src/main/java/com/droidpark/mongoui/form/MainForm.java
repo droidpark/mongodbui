@@ -456,11 +456,20 @@ public class MainForm extends Application {
 		Button connectButton = new Button("Connect");
 		connectButton.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent arg0) {
-				MongoUtil.setHost(hostField.getText());
-				MongoUtil.setPort(Integer.valueOf(portField.getText()));
-				MongoUtil.initConnection();
-				refreshDatabaseTreeView();
-				dialog.hideModalDialog();
+				try {
+					MongoUtil.setHost(hostField.getText());
+					MongoUtil.setPort(Integer.valueOf(portField.getText()));
+					MongoUtil.initConnection();
+					logger.info("Successfully connectted to " + MongoUtil.getHost() + ".");
+					refreshDatabaseTreeView();
+				}
+				catch (Exception e) {
+					logger.error(e.getMessage(),e);
+				}
+				finally {
+					dialog.hideModalDialog();
+					dialog.destroy();
+				}
 			}
 		});
 		dialog.addNodeToFooter(connectButton);
