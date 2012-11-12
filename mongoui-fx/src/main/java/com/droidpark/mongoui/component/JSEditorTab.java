@@ -2,6 +2,7 @@ package com.droidpark.mongoui.component;
 
 import com.droidpark.mongoui.util.ImageUtil;
 
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Tab;
@@ -17,7 +18,7 @@ public class JSEditorTab extends Tab implements UITab {
 	String title;
 	
 	AnchorPane tabToolPane;
-	TextArea textArea;
+	CodeEditor editor;
 	
 	public JSEditorTab(String title, String script) {
 		this.title = title;
@@ -26,16 +27,21 @@ public class JSEditorTab extends Tab implements UITab {
 	}
 	
 	public void init() {
-		initToolPane();
-		initTextArea();
-		BorderPane pane = new BorderPane();
-		pane.setTop(tabToolPane);
-		pane.setCenter(textArea);
-		setContent(pane);
+		Platform.runLater(new Runnable() {
+			public void run() {
+				initToolPane();
+				initCodeEditor();
+				BorderPane pane = new BorderPane();
+				pane.setTop(tabToolPane);
+				pane.setCenter(editor);
+				setContent(pane);
+			}
+		});
 	}
 	
-	private void initTextArea() {
-		textArea = new TextArea(script);
+	private void initCodeEditor() {
+		editor = new CodeEditor();
+		editor.loadCode(script);
 		setText(title);
 	}
 	

@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 
+import com.droidpark.mongoui.component.CodeEditor;
 import com.droidpark.mongoui.component.ModalDialog;
 import com.droidpark.mongoui.component.ResultTab;
 import com.droidpark.mongoui.util.ImageUtil;
@@ -25,33 +26,24 @@ public class DocumentRawDataViewDialog extends ModalDialog {
 	DBObject document;
 	ResultTab resultTab;
 	AnchorPane pane = new AnchorPane();
-	TextArea textArea = new TextArea();
+	CodeEditor editor = new CodeEditor();
 	
 	public DocumentRawDataViewDialog(DBObject document, ResultTab resultTab) {
-		super(Language.get(DIALOG_TITLE_RAW_DATA), 600, 300, ImageUtil.MD_DB_DOCUMENT_24_24);
+		super(Language.get(DIALOG_TITLE_RAW_DATA), 400, 200, ImageUtil.MD_DB_DOCUMENT_24_24);
 		this.resultTab = resultTab;
 		this.document = document;
-		init();
+		codeEditorInit();
 	}
 
-	private void init() {
-		
+	private void codeEditorInit() {
 		pane.prefHeightProperty().bind(getContent().heightProperty());
 		pane.prefWidthProperty().bind(getContent().widthProperty());
-		textArea.prefHeightProperty().bind(pane.heightProperty());
-		textArea.prefWidthProperty().bind(pane.widthProperty());
-		pane.getChildren().add(textArea);
+		editor.prefHeightProperty().bind(pane.heightProperty());
+		editor.prefWidthProperty().bind(pane.widthProperty());
+		pane.getChildren().add(editor);
 		setContent(pane);
-		
-		if(document != null) {
-			try {
-				String code = new JSONObject(document.toString()).toString(2);
-				textArea.setText(code);
-			}
-			catch (Exception e) {
-				logger.error(e.getMessage(),e);
-			}
-		}
+		String code = getDocumentJson();
+		editor.loadCode(code);
 		
 		Button okButton = new Button(Language.get(BUTTON_OK));
 		addNodeToFooter(okButton);
@@ -61,14 +53,29 @@ public class DocumentRawDataViewDialog extends ModalDialog {
 				destroy();
 			}
 		});
+		
+	}
+	
+	private String getDocumentJson() {
+		String code = "";
+		if(document != null) {
+			try {
+				code = new JSONObject(document.toString()).toString(2);
+			}
+			catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
+		}
+		return code;
 	}
 	
 	@Override
 	public void destroy() {
 		pane.prefHeightProperty().unbind();
 		pane.prefWidthProperty().unbind();
-		textArea.prefHeightProperty().unbind();
-		textArea.prefWidthProperty().unbind();
+		editor.prefHeightProperty().unbind();
+		editor.prefWidthProperty().unbind();
+		editor.destroy();
 		super.destroy();
 	}
 	

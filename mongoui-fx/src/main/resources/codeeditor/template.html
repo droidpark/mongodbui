@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>MongoUI -Code Editor</title>
+	<link rel="stylesheet" href="${editorCSS}">
+    <script src="${editorJS}"></script>
+    <script src="${editorType}"></script>
+	<style type="text/css">
+		body {padding: 0px; margin: 0px; width: 100%; height: 100%}
+		textarea {border: none; width: 99%; height:99%}
+		.CodeMirror-scroll {overflow: visible; width:auto; height:auto}
+	</style>
+</head>
+<body>
+	<textarea id="code" name="code" rows="" cols="">${insertCode}</textarea>
+	<script type="text/javascript">
+		var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+		    lineNumbers: true,
+		    matchBrackets: true,
+		    mode: "application/json"
+		});
+	</script>
+</body>
+</html>

@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 
+import com.droidpark.mongoui.component.CodeEditor;
 import com.droidpark.mongoui.component.ModalDialog;
 import com.droidpark.mongoui.component.ResultTab;
 import com.droidpark.mongoui.util.ImageUtil;
@@ -28,16 +29,16 @@ public class EditDocumentDialog extends ModalDialog {
 	DBObject document = null;
 	ResultTab resultTab;
 	AnchorPane pane = new AnchorPane();
-	TextArea textArea = new TextArea();
+	CodeEditor editor = new CodeEditor();
 	
 	public EditDocumentDialog(ResultTab resultTab) {
-		super(Language.get(DIALOG_TITLE_ADD_DOCUMENT), 600, 300, ImageUtil.MD_DB_ADD_24_24);
+		super(Language.get(DIALOG_TITLE_ADD_DOCUMENT), 400, 200, ImageUtil.MD_DB_ADD_24_24);
 		this.resultTab = resultTab;
 		init();
 	}
 	
 	public EditDocumentDialog(DBObject object, ResultTab resultTab) {
-		super(Language.get(DIALOG_TITLE_EDIT_DOCUMENT), 600, 300, ImageUtil.MD_DB_EDIT_24_24);
+		super(Language.get(DIALOG_TITLE_EDIT_DOCUMENT), 400, 200, ImageUtil.MD_DB_EDIT_24_24);
 		this.managed = true;
 		document = object;
 		this.resultTab = resultTab;
@@ -46,7 +47,7 @@ public class EditDocumentDialog extends ModalDialog {
 
 	private void init() {
 		initButtons();
-		initEditor();
+		codeEditorInit();
 	}
 	
 	private void initButtons() {
@@ -76,7 +77,7 @@ public class EditDocumentDialog extends ModalDialog {
 		public void handle(ActionEvent arg0) {
 			try {
 				DBCollection collection = resultTab.getCollection();
-				DBObject update = (DBObject)JSON.parse(textArea.getText());
+				DBObject update = (DBObject)JSON.parse(editor.getValue());
 				WriteResult reulst = collection.update(document, update);
 				logger.info("Document Updated: " + document + " to " + update);
 				resultTab.refreshData();
@@ -94,7 +95,7 @@ public class EditDocumentDialog extends ModalDialog {
 		public void handle(ActionEvent arg0) {
 			try {
 				DBCollection collection = resultTab.getCollection();
-				DBObject object = (DBObject) JSON.parse(textArea.getText());
+				DBObject object = (DBObject) JSON.parse(editor.getValue());
 				WriteResult result = collection.save(object);
 				logger.info("Document saved: " + object.toString());
 				resultTab.refreshData();
@@ -107,35 +108,38 @@ public class EditDocumentDialog extends ModalDialog {
 		}
 	}
 	
-	private void initEditor() {
+	private void codeEditorInit() {
+		pane.prefHeightProperty().bind(getContent().heightProperty());
+		pane.prefWidthProperty().bind(getContent().widthProperty());
+		editor.prefHeightProperty().bind(pane.heightProperty());
+		editor.prefWidthProperty().bind(pane.widthProperty());
+		pane.getChildren().add(editor);
+		setContent(pane);
+		String code = getDocumentJson();
+		editor.loadCode(code);
+	}
+	
+	private String getDocumentJson() {
 		String code = "";
 		if(document != null) {
 			try {
-				JSONObject json = new JSONObject(document.toString());
-				code = json.toString(2);
+				code = new JSONObject(document.toString()).toString(2);
 			}
 			catch (Exception e) {
 				logger.error(e.getMessage(),e);
 			}
 		}
-		
-		pane.prefHeightProperty().bind(getContent().heightProperty());
-		pane.prefWidthProperty().bind(getContent().widthProperty());
-		textArea.prefHeightProperty().bind(pane.heightProperty());
-		textArea.prefWidthProperty().bind(pane.widthProperty());
-		textArea.setWrapText(true);
-		textArea.setText(code);
-		pane.getChildren().add(textArea);
-		setContent(pane);
-		
+		return code;
 	}
+	
 	
 	@Override
 	public void destroy() {
 		pane.prefHeightProperty().unbind();
 		pane.prefWidthProperty().unbind();
-		textArea.prefHeightProperty().unbind();
-		textArea.prefWidthProperty().unbind();
+		editor.prefHeightProperty().bind(pane.heightProperty());
+		editor.prefWidthProperty().bind(pane.widthProperty());
+		editor.destroy();
 		super.destroy();
 	}
 }
