@@ -303,16 +303,23 @@ public class ResultTab extends Tab implements UITab {
 		resultInfoBox.getChildren().add(resultSizeLabel);
 		resultInfoBox.setStyle("-fx-padding: 4px;");
 		
+		//initFooterNavButtons();
+	}
+	
+	//init foolter button
+	private void initFooterNavButtons() {
 		HBox resultNavBox = new HBox();
 		resultNavBox.setStyle("-fx-padding: 4px;");
 		footerBorder.setRight(resultNavBox);
 		Button prev = new Button("", new ImageView(ImageUtil.PREV_16_16));
 		prev.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		prev.setOnAction(new FooterPrevButton_onClick());
 		resultNavBox.getChildren().add(prev);
 		resultNavBox.getChildren().add(navInfoLabel);
 		
 		Button next = new Button("", new ImageView(ImageUtil.NEXT_16_16));
 		next.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		next.setOnAction(new FooterNextButton_onClick());
 		resultNavBox.getChildren().add(next);
 	}
 	
@@ -372,6 +379,32 @@ public class ResultTab extends Tab implements UITab {
 	public void refreshData() {
 		initDataListAndColumnList();
 		refreshTableView();
+	}
+	
+	//FooterPane Prev Button onlick
+	private class FooterPrevButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			if((dataSkipValue - dataLimitValue) >= 0) {
+				dataSkipValue = dataSkipValue - dataLimitValue;
+			}
+			else {
+				dataSkipValue = 0;
+			}
+			refreshData();
+		}
+	}
+	
+	//FooterPane Next Button on click
+	private class FooterNextButton_onClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			if((dataSkipValue + dataLimitValue) <= resultSize) {
+				dataSkipValue = dataSkipValue + dataLimitValue;
+			}
+			else {
+				dataSkipValue = resultSize;
+			}
+			refreshData();
+		}
 	}
 	
 	//Toolbar Add Document On Click Action
