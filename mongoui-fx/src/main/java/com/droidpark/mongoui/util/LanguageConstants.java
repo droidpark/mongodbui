@@ -26,6 +26,8 @@ public final class LanguageConstants {
 	public static final String DIALOG_TITLE_EDIT_DOCUMENT = "dialog.title.edit_document";
 	public static final String DIALOG_TITLE_ADD_DOCUMENT = "dialog.title.add_document";
 	public static final String DIALOG_TITLE_MANAGE_COLLECTION = "dialog.title.manage_collections";
+	public static final String DIALOG_TITLE_CONNECTION="dialog.title.connection";
+	public static final String DIALOG_TITLE_MANAGE_CONNECTIONS="dialog.title.manage_connections";
 	
 	public static final String MESSAGE_ARE_YOU_SURE = "message.are_you_sure";
 	
@@ -35,4 +37,9 @@ public final class LanguageConstants {
 	public static final String LABEL_LIMIT = "label.limit";
 	public static final String LABEL_DATABASE = "label.database";
 	public static final String LABEL_COLLECTION = "label.collection";
+	public static final String LABEL_CONNECTION_NAME = "label.connection_name";
+	public static final String LABEL_HOST = "label.host";
+	public static final String LABEL_PORT = "label.port";
+	public static final String LABEL_USERNAME = "label.username";
+	public static final String LABEL_PASSWORD = "label.password";
 }

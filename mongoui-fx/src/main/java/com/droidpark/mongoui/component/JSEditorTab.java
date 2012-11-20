@@ -1,10 +1,14 @@
 package com.droidpark.mongoui.component;
 
 import com.droidpark.mongoui.util.ImageUtil;
+import com.droidpark.mongoui.util.Language;
+import com.droidpark.mongoui.util.LanguageConstants;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -46,7 +50,6 @@ public class JSEditorTab extends Tab implements UITab {
 	}
 	
 	private void initToolPane() {
-		tabToolPane = new AnchorPane();
 		tabToolPane = new AnchorPane();
 		tabToolPane.getStyleClass().add("-mongoui-tab-toolpane");
 		tabToolPane.setPrefHeight(30);

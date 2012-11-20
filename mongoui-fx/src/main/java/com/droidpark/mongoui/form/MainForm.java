@@ -43,9 +43,11 @@ import javafx.stage.Stage;
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
 import com.droidpark.mongoui.component.ModalDialog;
+import com.droidpark.mongoui.dialog.ConnectionDialog;
 import com.droidpark.mongoui.dialog.ManageCollectionDialog;
 import com.droidpark.mongoui.task.AddTabTask;
 import com.droidpark.mongoui.task.CreateJSEditorTab;
+import com.droidpark.mongoui.task.CreateJSRunnableTabTask;
 import com.droidpark.mongoui.task.CreateResultTabTask;
 import com.droidpark.mongoui.util.DBTreeEnum;
 import com.droidpark.mongoui.util.ImageUtil;
@@ -259,6 +261,7 @@ public class MainForm extends Application {
 		//JavaScript
 		Button javaScriptButton = new Button(Language.get(MAIN_MENU_JAVASCRIPT), new ImageView(ImageUtil.JAVASCRIPT_24_24));
 		javaScriptButton.setContentDisplay(ContentDisplay.TOP);
+		javaScriptButton.setOnAction(new MainToolbarJavaScriptButton_OnClick());
 		toolBar.getItems().add(javaScriptButton);
 		
 		//Server Status
@@ -283,6 +286,20 @@ public class MainForm extends Application {
 		public void handle(ActionEvent arg0) {
 			ManageCollectionDialog dialog = new ManageCollectionDialog(instance);
 			dialog.showModalDialog();
+		}
+	}
+	
+	private class MainToolbarJavaScriptButton_OnClick implements EventHandler<ActionEvent> {
+		public void handle(ActionEvent arg0) {
+			CreateJSRunnableTabTask task = new CreateJSRunnableTabTask();
+			progressBar.progressProperty().bind(task.progressProperty());
+			Thread taskThread = new Thread(task);
+			taskThread.start();
+			
+			//Add Result tab to TabPane Task
+			AddTabTask addTabTask = new AddTabTask(task, tabPane);
+			Thread tabThread = new Thread(addTabTask);
+			tabThread.start();
 		}
 	}
 	
@@ -429,50 +446,7 @@ public class MainForm extends Application {
 	}
 
 	private void connectToDatabaseModalDialog() {
-		
-		final ModalDialog dialog = new ModalDialog("Connect to Database", 250, 150, ImageUtil.DATABASE_24_24);
-		GridPane grid = new GridPane();
-		
-		Label hostLabel = new Label("Host: ");
-		hostLabel.setStyle("-fx-padding: 0px 50px 0px 0px;");
-		final TextField hostField = new TextField("localhost");
-		grid.addRow(0, hostLabel, hostField);
-		grid.setStyle("-fx-padding: 10px;");
-		
-		Label portLabel = new Label("Port: ");
-		portLabel.setStyle("-fx-padding: 0px 50px 0px 0px;");
-		final TextField portField = new TextField("27017");
-		grid.addRow(1, portLabel, portField);
-		dialog.setContent(grid);
-		Button cancelButton = new Button("Cancel");
-		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				dialog.hideModalDialog();
-				dialog.destroy();
-			}
-		});
-		dialog.addNodeToFooter(cancelButton);
-		
-		Button connectButton = new Button("Connect");
-		connectButton.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent arg0) {
-				try {
-					MongoUtil.setHost(hostField.getText());
-					MongoUtil.setPort(Integer.valueOf(portField.getText()));
-					MongoUtil.initConnection();
-					logger.info("Successfully connectted to " + MongoUtil.getHost() + ".");
-					refreshDatabaseTreeView();
-				}
-				catch (Exception e) {
-					logger.error(e.getMessage(),e);
-				}
-				finally {
-					dialog.hideModalDialog();
-					dialog.destroy();
-				}
-			}
-		});
-		dialog.addNodeToFooter(connectButton);
+		final ConnectionDialog dialog = new ConnectionDialog(this);
 		dialog.showModalDialog();
 	}
 	

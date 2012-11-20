@@ -14,6 +14,8 @@ public class MongoUtil {
 	private static Mongo connection = null;
 	private static String host;
 	private static int port;
+	private static String username;
+	private static String password;
 	
 	public static void initConnection() throws Exception{ 
 		connect();
@@ -47,5 +49,21 @@ public class MongoUtil {
 
 	public static void setPort(int port) {
 		MongoUtil.port = port;
+	}
+
+	public static String getUsername() {
+		return username;
+	}
+
+	public static void setUsername(String username) {
+		MongoUtil.username = username;
+	}
+
+	public static String getPassword() {
+		return password;
+	}
+
+	public static void setPassword(String password) {
+		MongoUtil.password = password;
 	}
 }
