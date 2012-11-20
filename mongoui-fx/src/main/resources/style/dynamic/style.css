@@ -274,3 +274,10 @@
 	-fx-border-color: #e1e1e1;
 	-fx-border-width: 0px 0px 0px 1px;
 }
+
+.-mongoui-footerpane2 *.button:hover, .-mongoui-footerpane2  *.toggle-button:hover {
+	-fx-background-color: #e1e1e1;
+	-fx-cursor: hand;
+	-fx-effect: null;
+	-fx-background-radius: 0px;
+}

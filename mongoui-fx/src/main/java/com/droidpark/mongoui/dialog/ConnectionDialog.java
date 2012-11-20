@@ -49,7 +49,7 @@ public class ConnectionDialog extends ModalDialog {
 	
 	Logger logger = Logger.getLogger(ConnectionDialog.class);
 	
-	TextField nameField = new TextField();
+	TextField nameField = new TextField("localhost");
 	TextField hostField = new TextField("127.0.0.1");
 	TextField portField = new TextField("27017");
 	TextField userField = new TextField();
