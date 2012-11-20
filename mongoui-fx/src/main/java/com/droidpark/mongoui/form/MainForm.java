@@ -114,6 +114,7 @@ public class MainForm extends Application {
 	 */
 	private void initStage() {
 		stage.setTitle("MongoUI FX");
+		stage.getIcons().add(ImageUtil.DATABASE_32_32);
 		pane = new AnchorPane();
 		scene = new Scene(pane, 850, 500);
 		scene.getStylesheets().addAll(getClass().getResource(Util.DEFAULT_STYLE + "style.css").toExternalForm());

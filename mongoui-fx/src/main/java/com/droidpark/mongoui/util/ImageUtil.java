@@ -6,6 +6,7 @@ public class ImageUtil {
 
 	private static String PATH = "/style/dynamic/images/";
 	
+	public static Image DATABASE_32_32 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database_32_32.png"));
 	public static Image DATABASE_24_24 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database_24_24.png"));
 	public static Image DATABASE_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database_16_16.png"));
 	public static Image DATABASE2_16_16 = new Image(ImageUtil.class.getResourceAsStream(PATH + "database2_16_16.png"));
