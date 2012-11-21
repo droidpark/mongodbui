@@ -42,4 +42,6 @@ public final class LanguageConstants {
 	public static final String LABEL_PORT = "label.port";
 	public static final String LABEL_USERNAME = "label.username";
 	public static final String LABEL_PASSWORD = "label.password";
+	
+	public static final String TAB_LABEL_WELCOME = "tab.label.welcome"; 
 }

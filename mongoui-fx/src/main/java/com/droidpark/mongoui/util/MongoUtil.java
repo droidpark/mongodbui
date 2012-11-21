@@ -1,11 +1,8 @@
 package com.droidpark.mongoui.util;
 
-import java.net.UnknownHostException;
-
 import org.apache.log4j.Logger;
 
 import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 
 public class MongoUtil {
 

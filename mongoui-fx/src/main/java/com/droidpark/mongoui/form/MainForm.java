@@ -1,6 +1,5 @@
 package com.droidpark.mongoui.form;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,14 +16,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeItem;
@@ -34,15 +29,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
-import com.droidpark.mongoui.component.ModalDialog;
+import com.droidpark.mongoui.component.MongoUITab;
 import com.droidpark.mongoui.dialog.ConnectionDialog;
 import com.droidpark.mongoui.dialog.ManageCollectionDialog;
 import com.droidpark.mongoui.task.AddTabTask;
@@ -52,7 +45,6 @@ import com.droidpark.mongoui.task.CreateResultTabTask;
 import com.droidpark.mongoui.util.DBTreeEnum;
 import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
-import com.droidpark.mongoui.util.LanguageConstants;
 import com.droidpark.mongoui.util.Log4jTextAreaAppender;
 import com.droidpark.mongoui.util.MongoUtil;
 import com.droidpark.mongoui.util.Util;
@@ -60,7 +52,6 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 
 public class MainForm extends Application {
 
@@ -234,6 +225,8 @@ public class MainForm extends Application {
 		tabPane.prefWidthProperty().bind(centerPane.widthProperty());
 		tabPane.prefHeightProperty().bind(centerPane.heightProperty());
 		centerPane.getChildren().add(tabPane);
+		MongoUITab welcomeTab = new MongoUITab();
+		tabPane.getTabs().add(welcomeTab);
 	}
 	
 	private void initToolBarButtons() {
