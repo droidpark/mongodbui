@@ -16,6 +16,7 @@ import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
@@ -99,11 +100,15 @@ public class EditDocumentDialog extends ModalDialog {
 				WriteResult result = collection.save(object);
 				logger.info("Document saved: " + object.toString());
 				resultTab.refreshData();
+			}
+			catch (MongoException e) {
+				logger.error("MongoException: " + e.getMessage());
+			}				
+			catch (Exception e) {
+				logger.error("Exception: " + e.getMessage(),e);
+			} finally {
 				hideModalDialog();
 				destroy();
-			}
-			catch (Exception e) {
-				logger.error(e.getMessage(),e);
 			}
 		}
 	}

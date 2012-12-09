@@ -38,6 +38,7 @@ import com.droidpark.mongoui.util.ImageUtil;
 import com.droidpark.mongoui.util.Language;
 import com.droidpark.mongoui.util.MongoUIDBConnection;
 import com.droidpark.mongoui.util.MongoUtil;
+import com.mongodb.MongoException;
 
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
@@ -148,11 +149,14 @@ public class ConnectionDialog extends ModalDialog {
 					MongoUtil.setUsername(userField.getText());
 					MongoUtil.setPassword(passField.getText());
 					MongoUtil.initConnection();
-					logger.info("Successfully connectted to " + MongoUtil.getHost() + ".");
 					mainForm.refreshDatabaseTreeView();
+					logger.info("Successfully connectted to " + MongoUtil.getHost() + ".");
 				}
+				catch (MongoException e) {
+					logger.error("Connection failed! MongoException: " + e.getMessage());
+				}				
 				catch (Exception e) {
-					logger.error(e.getMessage(),e);
+					logger.error("Connection failed! Exception: " + e.getMessage(),e);
 				}
 				finally {
 					hideModalDialog();

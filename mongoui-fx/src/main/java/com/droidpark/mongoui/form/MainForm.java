@@ -1,11 +1,17 @@
 package com.droidpark.mongoui.form;
 
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_COLLECTION;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_DATABASE;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_INDEX;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_JAVASCRIPT;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_SERVER_STATUS;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_SETTINGS;
+import static com.droidpark.mongoui.util.LanguageConstants.MAIN_MENU_SHARDING;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -33,7 +39,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import static com.droidpark.mongoui.util.LanguageConstants.*;
+import org.apache.log4j.Logger;
 
 import com.droidpark.mongoui.component.MongoUITab;
 import com.droidpark.mongoui.dialog.ConnectionDialog;
@@ -52,6 +58,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 
 public class MainForm extends Application {
 
@@ -301,7 +308,7 @@ public class MainForm extends Application {
 	/**
 	 * Database Connection after Database Tree Init.
 	 */
-	private void initDatabaseTree() {
+	private void initDatabaseTree() throws Exception {
 		try {
 			List<String> databaseList = new ArrayList<String>(MongoUtil.getConnection().getDatabaseNames());
 			//Root Node
@@ -362,13 +369,12 @@ public class MainForm extends Application {
 			treeView.prefWidthProperty().bind(databasePane.widthProperty());
 			treeView.setOnMouseClicked(new DatabaseTreeView_OnClick());
 			databasePane.getChildren().add(treeView);
-			
-			
-		} 
+		}  
 		catch (Exception e) {
 			databasePane.getChildren().clear();
 			logger.debug(e.getMessage(), e);
-		}
+			throw e;
+		} 	
 	}
 	
 	//Database TreeView on click actions
@@ -444,7 +450,7 @@ public class MainForm extends Application {
 		dialog.showModalDialog();
 	}
 	
-	public void refreshDatabaseTreeView() {
+	public void refreshDatabaseTreeView() throws Exception {
 		initDatabaseTree();
 	}
 }

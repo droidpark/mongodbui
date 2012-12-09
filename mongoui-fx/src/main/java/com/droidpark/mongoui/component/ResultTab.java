@@ -22,6 +22,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoException;
 
 import static com.droidpark.mongoui.util.LanguageConstants.*;
 
@@ -91,7 +92,7 @@ public class ResultTab extends Tab implements UITab {
 	
 	final ResultTab instance = this;
 	
-	public ResultTab(String collection, String database, Mongo mongo) {
+	public ResultTab(String collection, String database, Mongo mongo) throws Exception {
 		super(database + "." + collection);
 		this.collectionName = collection;
 		this.databaseName = database;
@@ -99,7 +100,7 @@ public class ResultTab extends Tab implements UITab {
 		initComponent();
 	}
 	
-	private void initComponent() {
+	private void initComponent() throws Exception {
 		initLayout();
 		initDataListAndColumnList();
 		initResultTable();
@@ -120,7 +121,7 @@ public class ResultTab extends Tab implements UITab {
 		navInfoLabel.setStyle("-fx-padding: 2px 5px;");
 	}
 	
-	private void initDataListAndColumnList() {
+	private void initDataListAndColumnList() throws Exception {
 		try {
 			dataList = FXCollections.observableArrayList();
 			columns = new HashMap<String, ResultTab.Column>();
@@ -157,7 +158,8 @@ public class ResultTab extends Tab implements UITab {
 			columns.putAll(columnsMap);
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.debug(e.getMessage(), e);
+			throw e;
 		}
 	}
 	
@@ -369,7 +371,7 @@ public class ResultTab extends Tab implements UITab {
 	}
 	
 	//Refresh datalist
-	public void refreshData() {
+	public void refreshData()  throws Exception {
 		initDataListAndColumnList();
 		refreshTableView();
 	}
@@ -383,7 +385,15 @@ public class ResultTab extends Tab implements UITab {
 			else {
 				dataSkipValue = 0;
 			}
-			refreshData();
+			try {
+				refreshData();
+			}
+			catch (MongoException e) {
+				logger.error("MongoException: " + e.getMessage());
+			}				
+			catch (Exception e) {
+				logger.error("Exception: " + e.getMessage(),e);
+			}
 		}
 	}
 	
@@ -396,7 +406,15 @@ public class ResultTab extends Tab implements UITab {
 			else {
 				dataSkipValue = resultSize;
 			}
-			refreshData();
+			try {
+				refreshData();
+			}
+			catch (MongoException e) {
+				logger.error("MongoException: " + e.getMessage());
+			}				
+			catch (Exception e) {
+				logger.error("Exception: " + e.getMessage(),e);
+			}
 		}
 	}
 	
@@ -430,7 +448,15 @@ public class ResultTab extends Tab implements UITab {
 				public void handle(ActionEvent arg0) {
 					DBObject document = tableView.getSelectionModel().getSelectedItem(); 
 					collection.remove(document);
-					refreshData();
+					try {
+						refreshData();
+					}
+					catch (MongoException e) {
+						logger.error("MongoException: " + e.getMessage());
+					}				
+					catch (Exception e) {
+						logger.error("Exception: " + e.getMessage(),e);
+					}
 					logger.info("Removed: " + document.get("_id"));
 					dialog.hideModalDialog();
 					dialog.destroy();
@@ -443,7 +469,15 @@ public class ResultTab extends Tab implements UITab {
 	//Toolbar refresh button onclick action
 	private class ToolbarRefreshButton_onClick implements EventHandler<ActionEvent> {
 		public void handle(ActionEvent arg0) {
-			refreshData();
+			try {
+				refreshData();
+			}
+			catch (MongoException e) {
+				logger.error("MongoException: " + e.getMessage());
+			}				
+			catch (Exception e) {
+				logger.error("Exception: " + e.getMessage(),e);
+			}
 		}
 	}
 	
